@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS reservations (
 
 -- Crear tabla de historial de reservas
 CREATE TABLE IF NOT EXISTS historial_res (
-                                             his_id SERIAL PRIMARY KEY,
+                                             his_id BIGSERIAL PRIMARY KEY,
                                              user_id INTEGER NOT NULL,
                                              res_id INTEGER NOT NULL,
                                              his_action VARCHAR(50) NOT NULL CHECK (his_action IN ('CREATE', 'UPDATE', 'DELETE')),
