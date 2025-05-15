@@ -42,7 +42,7 @@ public class ReservationHistory {
     @Column(name = "his_old_values", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     @Schema(description = "Valores anteriores de la reserva (en formato JSON)")
-    private String oldValues;
+    private Object oldValues;
 
     @Column(name = "his_new_values", columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
