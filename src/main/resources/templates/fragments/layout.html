@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title th:text="${title} ? ${title} + ' | ' + #{app.title} : #{app.title}">Ambrosía</title>
+
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos personalizados -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" th:href="@{/img/favicon.ico}">
+
+    <style>
+        :root {
+            --burdeos-principal: #8C1C13;
+            --crema-suave: #F5F5F0;
+            --marron-calido: #5D4037;
+            --gris-marengo: #4F5459;
+            --burdeos-claro: #AB4E3C;
+            --gris-claro: #7E8C8D;
+            --warm-beige: #E6D2B5;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--crema-suave);
+            color: var(--marron-calido);
+        }
+
+        .navbar {
+            background-color: var(--burdeos-principal);
+        }
+
+        .navbar-brand, .nav-link {
+            color: var(--crema-suave) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--burdeos-principal);
+            border-color: var(--burdeos-principal);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--burdeos-claro);
+            border-color: var(--burdeos-claro);
+        }
+
+        footer {
+            background-color: var(--marron-calido);
+            color: var(--crema-suave);
+            padding: 2rem 0;
+        }
+
+        .dropdown-menu {
+            background-color: var(--warm-beige);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--burdeos-claro);
+            color: var(--crema-suave);
+        }
+    </style>
+</head>
+
+<body>
+<!-- Navbar -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="fas fa-utensils me-2"></i>
+            <span th:text="#{app.title}">Ambrosía</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <!-- Visible para todos -->
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Inicio</a>
+                </li>
+
+                <!-- Visible para usuarios autenticados -->
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link" th:href="@{/reservas}" th:text="#{nav.reservas}">Reservas</a>
+                </li>
+
+                <!-- Visible para ADMIN y STAFF -->
+                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'STAFF')">
+                    <a class="nav-link" th:href="@{/mesas}" th:text="#{nav.mesas}">Mesas</a>
+                </li>
+
+                <!-- Visible solo para ADMIN -->
+                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                    <a class="nav-link" th:href="@{/usuarios}" th:text="#{nav.usuarios}">Usuarios</a>
+                </li>
+
+                <!-- Visible solo para ADMIN -->
+                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
+                    <a class="nav-link" th:href="@{/historial}" th:text="#{nav.historial}">Historial</a>
+                </li>
+            </ul>
+
+            <!-- Selector de idioma -->
+            <div class="dropdown me-3">
+                <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i class="fas fa-globe me-1"></i>
+                    <span th:text="#{language.current}">Idioma</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="?lang=es" th:text="#{language.spanish}">Español</a></li>
+                    <li><a class="dropdown-item" href="?lang=en" th:text="#{language.english}">English</a></li>
+                    <li><a class="dropdown-item" href="?lang=it" th:text="#{language.italian}">Italiano</a></li>
+                </ul>
+            </div>
+
+            <!-- Menú de usuario para autenticados -->
+            <div class="d-flex" sec:authorize="isAuthenticated()">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user me-1"></i>
+                        <span sec:authentication="name">Usuario</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/perfil}" th:text="#{nav.profile}">Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button class="dropdown-item" type="submit" th:text="#{nav.logout}">Cerrar sesión</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Botones para no autenticados -->
+            <div class="d-flex" sec:authorize="!isAuthenticated()">
+                <a class="btn btn-sm btn-outline-light me-2" th:href="@{/login}" th:text="#{nav.login}">Iniciar sesión</a>
+                <a class="btn btn-sm btn-light" th:href="@{/registro}" th:text="#{nav.register}">Registrarse</a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenedor de alertas -->
+<div th:fragment="alerts" class="container mt-3">
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${success}">Mensaje de éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${error}">Mensaje de error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${info}" class="alert alert-info alert-dismissible fade show">
+        <i class="fas fa-info-circle me-2"></i>
+        <span th:text="${info}">Mensaje informativo</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${warning}" class="alert alert-warning alert-dismissible fade show">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <span th:text="${warning}">Mensaje de advertencia</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer th:fragment="footer" class="mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h5 class="mb-3" th:text="#{app.title}">Ambrosía</h5>
+                <p th:text="#{footer.description}">Restaurante de alta cocina donde cada plato es una obra de arte culinaria</p>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <h5 class="mb-3" th:text="#{footer.contact}">Contacto</h5>
+                <p><i class="fas fa-map-marker-alt me-2"></i> <span th:text="#{footer.address}">Calle Principal, 123</span></p>
+                <p><i class="fas fa-phone me-2"></i> <span th:text="#{footer.phone}">+34 912 345 678</span></p>
+                <p><i class="fas fa-envelope me-2"></i> <span th:text="#{footer.email}">info@ambrosia.com</span></p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="mb-3" th:text="#{footer.followus}">Síguenos</h5>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-light"><i class="fab fa-facebook-f fa-lg"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-instagram fa-lg"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-twitter fa-lg"></i></a>
+                    <a href="#" class="text-light"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                </div>
+            </div>
+        </div>
+        <hr class="my-4" style="background-color: var(--crema-suave);">
+        <div class="text-center">
+            <p>&copy; <span th:text="${#temporals.format(#temporals.createNow(), 'yyyy')}">2025</span>
+                <span th:text="#{footer.rights}">Ambrosía. Todos los derechos reservados.</span></p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<div th:fragment="scripts">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Moment.js para manejo de fechas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/es.min.js"></script>
+
+    <!-- Scripts personalizados -->
+    <script th:src="@{/js/scripts.js}"></script>
+
+    <script>
+        // Configurar el idioma de moment.js según el idioma actual
+        const currentLang = $('html').attr('lang') || 'es';
+        moment.locale(currentLang);
+
+        // Auto-cerrar alertas después de 5 segundos
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+        });
+    </script>
+</div>
+</body>
+</html>

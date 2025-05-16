@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- Fragmento de paginación reutilizable -->
+<div th:fragment="pagination(page, url)" class="mt-4">
+    <div class="row align-items-center">
+        <!-- Información de paginación -->
+        <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
+            <span th:text="#{pagination.showing}">Mostrando</span>
+            <span th:text="${page.numberOfElements}">10</span>
+            <span th:text="#{pagination.of}">de</span>
+            <span th:text="${page.totalElements}">100</span>
+            <span th:text="#{pagination.items}">elementos</span>
+        </div>
+
+        <!-- Control de paginación -->
+        <div class="col-md-6">
+            <div class="d-flex justify-content-md-end justify-content-center align-items-center">
+                <!-- Selector de tamaño de página -->
+                <div class="me-3">
+                    <select class="form-select form-select-sm" id="pageSizeSelector"
+                            onchange="window.location.href=this.value">
+                        <option th:each="size : ${T(java.util.Arrays).asList(10, 25, 50)}"
+                                th:value="${url} + '?page=0&size=' + ${size}"
+                                th:text="${size}"
+                                th:selected="${page.size == size}">10</option>
+                    </select>
+                </div>
+
+                <!-- Navegación de páginas -->
+                <nav aria-label="Navegación de páginas">
+                    <ul class="pagination pagination-sm mb-0">
+                        <!-- Botón Anterior -->
+                        <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
+                            <a class="page-link" th:href="${page.first} ? '#' : ${url} + '?page=' + ${page.number - 1} + '&size=' + ${page.size}">
+                                <i class="fas fa-chevron-left small"></i>
+                            </a>
+                        </li>
+
+                        <!-- Números de página -->
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+                            th:if="${i >= page.number - 2 and i <= page.number + 2}"
+                            th:classappend="${page.number == i} ? 'active' : ''">
+                            <a class="page-link" th:href="${url} + '?page=' + ${i} + '&size=' + ${page.size}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+
+                        <!-- Botón Siguiente -->
+                        <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
+                            <a class="page-link" th:href="${page.last} ? '#' : ${url} + '?page=' + ${page.number + 1} + '&size=' + ${page.size}">
+                                <i class="fas fa-chevron-right small"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para mantener los filtros al cambiar de página -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener todos los enlaces de paginación
+            const paginationLinks = document.querySelectorAll('.pagination .page-link');
+
+            // Obtener parámetros de búsqueda actuales (excluyendo page y size)
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.delete('page');
+            urlParams.delete('size');
+
+            // Construir la cadena de parámetros adicionales
+            let additionalParams = '';
+            if (urlParams.toString()) {
+                additionalParams = '&' + urlParams.toString();
+            }
+
+            // Añadir parámetros adicionales a los enlaces de paginación
+            paginationLinks.forEach(link => {
+                if (link.href !== '#') {
+                    link.href = link.href + additionalParams;
+                }
+            });
+
+            // Actualizar también el selector de tamaño de página
+            const pageSizeOptions = document.querySelectorAll('#pageSizeSelector option');
+            pageSizeOptions.forEach(option => {
+                option.value = option.value + additionalParams;
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
