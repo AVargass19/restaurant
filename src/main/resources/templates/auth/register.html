@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{registration.title}">Registro - Ambrosía</title>
+    <style>
+        :root {
+            --burdeos-principal: #8C1C13;
+            --crema-suave: #F5F5F0;
+            --marron-calido: #5D4037;
+            --gris-marengo: #4F5459;
+            --burdeos-claro: #AB4E3C;
+            --gris-claro: #7E8C8D;
+            --warm-beige: #E6D2B5;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--crema-suave);
+            color: var(--marron-calido);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin: 40px 0;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo h1 {
+            color: var(--burdeos-principal);
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .form-title {
+            text-align: center;
+            color: var(--marron-calido);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--gris-marengo);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--gris-claro);
+            border-radius: 3px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="tel"]:focus {
+            border-color: var(--burdeos-claro);
+            outline: none;
+        }
+
+        .error {
+            color: #F44336;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: var(--burdeos-principal);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--burdeos-claro);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: var(--burdeos-principal);
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .language-selector {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .language-selector a {
+            color: var(--gris-marengo);
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .language-selector a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <h1>Ambrosía</h1>
+    </div>
+
+    <h2 class="form-title" th:text="#{registration.title}">Crear una cuenta</h2>
+
+    <form th:action="@{/register}" th:object="${userDto}" method="post">
+        <div class="form-group">
+            <label for="name" th:text="#{registration.name}">Nombre</label>
+            <input type="text" id="name" th:field="*{name}" required>
+            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error en el nombre</div>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName" th:text="#{registration.lastName}">Apellido</label>
+            <input type="text" id="lastName" th:field="*{lastName}" required>
+            <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Error en el apellido</div>
+        </div>
+
+        <div class="form-group">
+            <label for="username" th:text="#{registration.username}">Nombre de usuario</label>
+            <input type="text" id="username" th:field="*{username}" required>
+            <div class="error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error en el nombre de usuario</div>
+        </div>
+
+        <div class="form-group">
+            <label for="password" th:text="#{registration.password}">Contraseña</label>
+            <input type="password" id="password" th:field="*{password}" required>
+            <div class="error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error en la contraseña</div>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword" th:text="#{registration.confirmPassword}">Confirmar contraseña</label>
+            <input type="password" id="confirmPassword" th:field="*{confirmPassword}" required>
+            <div class="error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Las contraseñas no coinciden</div>
+        </div>
+
+        <div class="form-group">
+            <label for="phone" th:text="#{registration.phone}">Teléfono</label>
+            <input type="tel" id="phone" th:field="*{phone}" required>
+            <div class="error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Error en el teléfono</div>
+        </div>
+
+        <button type="submit" class="btn" th:text="#{registration.submit}">Registrarse</button>
+    </form>
+
+    <div class="login-link">
+        <span th:text="#{registration.haveAccount}">¿Ya tienes cuenta?</span>
+        <a th:href="@{/login}" th:text="#{registration.login}">Iniciar sesión</a>
+    </div>
+
+    <div class="language-selector">
+        <a href="?lang=es">Español</a> |
+        <a href="?lang=en">English</a> |
+        <a href="?lang=it">Italiano</a>
+    </div>
+</div>
+</body>
+</html>
