@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{app.title}">Ambrosía - Alta Cocina</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --burdeos-principal: #8C1C13;
+            --crema-suave: #F5F5F0;
+            --marron-calido: #5D4037;
+            --gris-marengo: #4F5459;
+            --burdeos-claro: #AB4E3C;
+            --gris-claro: #7E8C8D;
+            --warm-beige: #E6D2B5;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--crema-suave);
+            color: var(--marron-calido);
+        }
+
+        .navbar {
+            background-color: var(--burdeos-principal);
+        }
+
+        .navbar-brand, .nav-link {
+            color: var(--crema-suave) !important;
+        }
+
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/hero-bg.webp');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-section p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .btn-primary {
+            background-color: var(--burdeos-principal);
+            border-color: var(--burdeos-principal);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--burdeos-claro);
+            border-color: var(--burdeos-claro);
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--burdeos-principal);
+            font-family: 'Playfair Display', serif;
+        }
+
+        .restaurant-info {
+            background-color: var(--warm-beige);
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .reservation-steps {
+            background-color: var(--crema-suave);
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 30px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            background-color: var(--burdeos-principal);
+            color: white;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .access-cards {
+            background-color: var(--warm-beige);
+        }
+
+        .access-card {
+            padding: 40px;
+            text-align: center;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+
+        .access-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .access-icon {
+            font-size: 3rem;
+            color: var(--burdeos-principal);
+            margin-bottom: 20px;
+        }
+
+        footer {
+            background-color: var(--gris-marengo);
+            color: var(--crema-suave);
+            padding: 40px 0;
+        }
+
+        .language-selector {
+            margin-left: 15px;
+        }
+
+        .language-selector a {
+            color: var(--crema-suave);
+            text-decoration: none;
+            margin: 0 5px;
+        }
+
+        .language-selector a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#" th:text="#{app.name}">Ambrosía</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/index}" th:text="#{nav.home}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/menu}" th:text="#{nav.menu}">Menú</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#reservar" th:text="#{nav.reservations}">Reservas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about-us}" th:text="#{nav.about}">Sobre Nosotros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#footer-contact" th:text="#{nav.contact}">Contacto</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAnonymous()')}">
+                    <a class="nav-link" th:href="@{/login}" th:text="#{nav.login}">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/dashboard}" th:text="#{nav.dashboard}">Panel</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="?lang=es">Español</a></li>
+                        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                        <li><a class="dropdown-item" href="?lang=it">Italiano</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 th:text="#{app.welcome}">Bienvenido a Ambrosía</h1>
+        <p th:text="#{app.slogan}">Una experiencia culinaria inolvidable</p>
+        <a href="#reservar" class="btn btn-primary btn-lg mt-4" th:text="#{app.reserve.now}">Reservar Ahora</a>
+    </div>
+</section>
+
+<!-- Restaurant Info Section -->
+<section class="section restaurant-info">
+    <div class="container">
+        <h2 class="section-title" th:text="#{section.about.title}">Sobre Ambrosía</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="info-card">
+                    <img src="/images/restaurant-1.jpg" class="card-img-top" alt="Ambrosía interior">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="#{about.ambiance.title}">Ambiente Exclusivo</h5>
+                        <p class="card-text" th:text="#{about.ambiance.text}">Disfrute de un ambiente sofisticado y elegante, diseñado para brindarte una experiencia gastronómica incomparable.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="info-card">
+                    <img src="/images/restaurant-2.jpg" class="card-img-top" alt="Platos de Ambrosía">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="#{about.cuisine.title}">Alta Cocina</h5>
+                        <p class="card-text" th:text="#{about.cuisine.text}">Nuestro chef ejecutivo crea platos extraordinarios que fusionan técnicas clásicas con innovación contemporánea.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="info-card">
+                    <img src="/images/restaurant-3.jpg" class="card-img-top" alt="Servicio de Ambrosía">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="#{about.service.title}">Servicio Impecable</h5>
+                        <p class="card-text" th:text="#{about.service.text}">Nuestro equipo de profesionales está dedicado a proporcionarte un servicio atento y personalizado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reservation Steps Section -->
+<section id="reservar" class="section reservation-steps">
+    <div class="container">
+        <h2 class="section-title" th:text="#{section.reservation.steps.title}">Cómo Hacer una Reserva</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h5 th:text="#{reservation.step1.title}">Regístrate</h5>
+                    <p th:text="#{reservation.step1.text}">Crea una cuenta para acceder a nuestro sistema de reservas.</p>
+                    <i class="fas fa-user-plus fa-2x mt-3" style="color: var(--burdeos-principal);"></i>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h5 th:text="#{reservation.step2.title}">Selecciona Fecha y Hora</h5>
+                    <p th:text="#{reservation.step2.text}">Elige la fecha y hora que prefieras para tu visita.</p>
+                    <i class="fas fa-calendar-alt fa-2x mt-3" style="color: var(--burdeos-principal);"></i>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h5 th:text="#{reservation.step3.title}">Personaliza tu Reserva</h5>
+                    <p th:text="#{reservation.step3.text}">Indica el número de comensales y preferencias especiales.</p>
+                    <i class="fas fa-utensils fa-2x mt-3" style="color: var(--burdeos-principal);"></i>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h5 th:text="#{reservation.step4.title}">Confirma</h5>
+                    <p th:text="#{reservation.step4.text}">Recibe la confirmación de tu reserva por correo electrónico.</p>
+                    <i class="fas fa-check-circle fa-2x mt-3" style="color: var(--burdeos-principal);"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Access Cards Section -->
+<section class="section access-cards">
+    <div class="container">
+        <h2 class="section-title" th:text="#{section.access.title}">Acceso Rápido</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="access-card">
+                    <div class="access-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3 th:text="#{access.reservations.title}">Gestionar Reservas</h3>
+                    <p th:text="#{access.reservations.text}">Accede a tu cuenta para gestionar tus reservas existentes o crear nuevas.</p>
+                    <a href="/dashboard" class="btn btn-primary mt-3" th:if="${#authorization.expression('isAuthenticated()')}" th:text="#{access.reservations.button}">Mis Reservas</a>
+                    <a href="/login" class="btn btn-primary mt-3" th:if="${#authorization.expression('isAnonymous()')}" th:text="#{access.login.button}">Iniciar Sesión</a>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="access-card">
+                    <div class="access-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3 th:text="#{access.register.title}">Crear Cuenta</h3>
+                    <p th:text="#{access.register.text}">¿Aún no tienes cuenta? Regístrate para disfrutar de todas las ventajas.</p>
+                    <a href="/register" class="btn btn-primary mt-3" th:if="${#authorization.expression('isAnonymous()')}" th:text="#{access.register.button}">Registrarse</a>
+                    <a href="/dashboard" class="btn btn-primary mt-3" th:if="${#authorization.expression('isAuthenticated()')}" th:text="#{access.dashboard.button}">Ir al Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4" id="footer-contact">
+                <h5 th:text="#{footer.about.title}">Ambrosía</h5>
+                <p th:text="#{footer.about.text}">Experiencia gastronómica de alta cocina en un ambiente exclusivo.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.contact.title}">Contacto</h5>
+                <p><i class="fas fa-map-marker-alt"></i> <span th:text="#{footer.address}">Calle Gourmet 123, Ciudad</span></p>
+                <p><i class="fas fa-phone"></i> <span th:text="#{footer.phone}">+34 912 345 678</span></p>
+                <p><i class="fas fa-envelope"></i> <span th:text="#{footer.email}">reservas@ambrosia.com</span></p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.hours.title}">Horario</h5>
+                <p><span th:text="#{footer.hours.lunch}">Comidas: 13:00 - 15:30</span></p>
+                <p><span th:text="#{footer.hours.dinner}">Cenas: 20:00 - 23:00</span></p>
+                <p><span th:text="#{footer.hours.closed}">Cerrado: Lunes</span></p>
+            </div>
+        </div>
+        <hr class="mt-4 mb-4" style="border-color: var(--crema-suave);">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-0" th:text="#{footer.copyright}">© 2025 Ambrosía. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="language-selector">
+                    <a href="?lang=es">ES</a> |
+                    <a href="?lang=en">EN</a> |
+                    <a href="?lang=it">IT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
