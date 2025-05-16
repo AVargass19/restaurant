@@ -17,23 +17,4 @@ public class RestaurantApplication implements WebMvcConfigurer {
 	public static void main(String[] args) {
 		SpringApplication.run(RestaurantApplication.class, args);
 	}
-
-	@Bean
-	public LocaleResolver localeResolver() {
-		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-		localeResolver.setDefaultLocale(new Locale("es"));
-		return localeResolver;
-	}
-
-	@Bean
-	public LocaleChangeInterceptor localeChangeInterceptor() {
-		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-		interceptor.setParamName("lang");
-		return interceptor;
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(localeChangeInterceptor());
-	}
 }
