@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="#{dashboard.title}">Ambrosía - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --burdeos-principal: #8C1C13;
+      --crema-suave: #F5F5F0;
+      --marron-calido: #5D4037;
+      --gris-marengo: #4F5459;
+      --burdeos-claro: #AB4E3C;
+      --gris-claro: #7E8C8D;
+      --warm-beige: #E6D2B5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Playfair Display', serif;
+    }
+
+    body {
+      background-color: var(--crema-suave);
+      color: var(--marron-calido);
+    }
+
+    .navbar {
+      background-color: var(--burdeos-principal);
+      color: var(--crema-suave);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      font-style: italic;
+    }
+
+    .navbar-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .navbar-links a {
+      color: var(--crema-suave);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .navbar-links a:hover {
+      color: var(--warm-beige);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--burdeos-claro);
+    }
+
+    .welcome-message {
+      font-size: 1.8rem;
+      color: var(--burdeos-principal);
+    }
+
+    .language-selector select {
+      padding: 0.5rem;
+      background-color: var(--warm-beige);
+      border: 1px solid var(--marron-calido);
+      border-radius: 4px;
+      color: var(--marron-calido);
+    }
+
+    .dashboard-panels {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem; /* Espacio entre cada panel */
+    }
+
+    .panel {
+      width: 100%;
+      background-color: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--gris-claro);
+    }
+
+    .panel-title {
+      font-size: 1.4rem;
+      color: var(--burdeos-principal);
+    }
+
+    .panel-icon {
+      color: var(--burdeos-principal);
+      font-size: 1.2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .stat-card {
+      background-color: var(--warm-beige);
+      border-radius: 6px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--burdeos-principal);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--marron-calido);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    table th, table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gris-claro);
+    }
+
+    table th {
+      background-color: var(--gris-marengo);
+      color: var(--crema-suave);
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .quick-link {
+      background-color: var(--burdeos-principal);
+      color: var(--crema-suave);
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .quick-link:hover {
+      background-color: var(--burdeos-claro);
+    }
+
+    .calendar {
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .calendar .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.25rem;
+    }
+
+    .calendar-day {
+      background-color: white;
+      border: 1px solid var(--gris-claro);
+      padding: 0.5rem;
+      text-align: center;
+      height: 60px;
+    }
+
+    .calendar-day.today {
+      background-color: var(--warm-beige);
+      font-weight: bold;
+    }
+
+    .calendar-day.has-reservation {
+      position: relative;
+    }
+
+    .calendar-day.has-reservation::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: var(--burdeos-principal);
+    }
+
+    .table-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .table-card {
+      background-color: var(--crema-suave);
+      border: 2px solid var(--gris-claro);
+      border-radius: 4px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .table-card:hover {
+      transform: scale(1.05);
+    }
+
+    .table-card.available {
+      border-color: #4CAF50;
+    }
+
+    .table-card.occupied {
+      border-color: var(--burdeos-principal);
+      background-color: rgba(140, 28, 19, 0.1);
+    }
+
+    .table-card.reserved {
+      border-color: #FFC107;
+      background-color: rgba(255, 193, 7, 0.1);
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 250px;
+      margin-top: 1rem;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .search-form input, .search-form select {
+      padding: 0.5rem;
+      border: 1px solid var(--gris-claro);
+      border-radius: 4px;
+    }
+
+    .search-form button {
+      background-color: var(--burdeos-principal);
+      color: var(--crema-suave);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-weight: bold;
+      padding: 0.5rem;
+    }
+
+    /* Estilo para dispositivos móviles */
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="navbar-logo">Ambrosía</div>
+  <div class="navbar-links">
+    <a th:href="@{/index}" th:text="#{nav.home}">Home</a>
+    <a href="#" th:text="#{nav.reservations}">Reservations</a>
+    <a th:href="@{/user/profile}" th:text="#{nav.profile}">Profile</a>
+    <a th:href="@{/logout}" th:text="#{nav.logout}">Logout</a>
+  </div>
+</nav>
+
+<!-- Main Container -->
+<div class="container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1 class="welcome-message" th:text="#{dashboard.welcome(${user.name} + ' ' + ${user.lastName})}">Welcome, User</h1>
+    <div class="language-selector">
+      <select id="languageSelect" onchange="changeLanguage()">
+        <option value="es" th:selected="${#locale.language == 'es'}">Español</option>
+        <option value="en" th:selected="${#locale.language == 'en'}">English</option>
+        <option value="it" th:selected="${#locale.language == 'it'}">Italiano</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div class="dashboard-panels" th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+    <!-- Statistics Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{admin.statistics}">Statistics</h2>
+        <i class="fas fa-chart-line panel-icon"></i>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" th:text="${totalUsers}">120</div>
+          <div class="stat-label" th:text="#{admin.total.users}">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" th:text="${totalTables}">24</div>
+          <div class="stat-label" th:text="#{admin.total.tables}">Total Tables</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" th:text="${activeReservations}">18</div>
+          <div class="stat-label" th:text="#{admin.active.reservations}">Active Reservations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" th:text="${todayReservations}">8</div>
+          <div class="stat-label" th:text="#{admin.today.reservations}">Today's Reservations</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reservations Chart Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{admin.recent.reservations}">Recent Reservations</h2>
+        <i class="fas fa-calendar-alt panel-icon"></i>
+      </div>
+      <div class="chart-container" id="reservationChart">
+        <!-- Chart will be rendered here via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Quick Access Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{admin.quick.access}">Quick Access</h2>
+        <i class="fas fa-bolt panel-icon"></i>
+      </div>
+      <div class="quick-links">
+        <a href="/users" class="quick-link" th:text="#{admin.manage.users}">Manage Users</a>
+        <a href="/tables" class="quick-link" th:text="#{admin.manage.tables}">Manage Tables</a>
+        <a href="/reservations" class="quick-link" th:text="#{admin.manage.reservations}">Manage Reservations</a>
+        <a href="/history" class="quick-link" th:text="#{admin.view.history}">View History</a>
+      </div>
+    </div>
+
+    <!-- Recent System Actions Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{admin.recent.actions}">Recent System Actions</h2>
+        <i class="fas fa-history panel-icon"></i>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th th:text="#{admin.action.date}">Date</th>
+          <th th:text="#{admin.action.user}">User</th>
+          <th th:text="#{admin.action.description}">Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="action : ${recentActions}">
+          <td th:text="${#temporals.format(action.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
+          <td th:text="${action.user.name + ' ' + action.user.lastName}">John Doe</td>
+          <td th:text="${action.description}">Created new reservation</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Staff Dashboard -->
+  <div class="dashboard-panels" th:if="${#authorization.expression('hasRole(''ROLE_STAFF'')')}">
+    <!-- Tables Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{staff.tables.status}">Tables Status</h2>
+        <i class="fas fa-utensils panel-icon"></i>
+      </div>
+      <div class="table-grid">
+        <div th:each="table : ${tables}"
+             th:class="${table.status == T(com.restaurant.model.RestaurantTable.TableStatus).AVAILABLE ? 'table-card available' :
+                               (table.status == T(com.restaurant.model.RestaurantTable.TableStatus).OCCUPIED ? 'table-card occupied' : 'table-card reserved')}">
+          <div th:text="#{staff.table} + ' ' + ${table.id}">Table 1</div>
+          <div th:text="#{staff.status} + ': ' + ${table.status}">Status: Available</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Reservations Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{staff.today.reservations}">Today's Reservations</h2>
+        <i class="fas fa-calendar-day panel-icon"></i>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th th:text="#{staff.reservation.time}">Time</th>
+          <th th:text="#{staff.reservation.table}">Table</th>
+          <th th:text="#{staff.reservation.customer}">Customer</th>
+          <th th:text="#{staff.reservation.guests}">Guests</th>
+          <th th:text="#{staff.reservation.status}">Status</th>
+          <th th:text="#{staff.reservation.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reservation : ${todayReservations}">
+          <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">19:30</td>
+          <td th:text="#{staff.table} + ' ' + ${reservation.table.id}">Table 5</td>
+          <td th:text="${reservation.user.name + ' ' + reservation.user.lastName}">María García</td>
+          <td th:text="${reservation.guests}">4</td>
+          <td th:text="${reservation.status}">ACTIVE</td>
+          <td>
+            <a th:href="@{'/reservations/complete/' + ${reservation.id}}" class="quick-link" th:text="#{staff.mark.completed}"
+               th:if="${reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Mark as Completed</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Table Actions Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{staff.table.actions}">Table Actions</h2>
+        <i class="fas fa-tasks panel-icon"></i>
+      </div>
+      <div class="quick-links">
+        <a href="/tables" class="quick-link" th:text="#{staff.manage.tables}">Manage Tables</a>
+        <a href="/reservations" class="quick-link" th:text="#{staff.manage.reservations}">Manage Reservations</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Dashboard -->
+  <div class="dashboard-panels" th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}">
+    <!-- Current Reservations Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{user.current.reservations}">Your Reservations</h2>
+        <i class="fas fa-calendar-check panel-icon"></i>
+      </div>
+      <table>
+        <thead>
+        <tr>
+          <th th:text="#{user.reservation.date}">Date</th>
+          <th th:text="#{user.reservation.time}">Time</th>
+          <th th:text="#{user.reservation.guests}">Guests</th>
+          <th th:text="#{user.reservation.status}">Status</th>
+          <th th:text="#{user.reservation.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="reservation : ${userReservations}">
+          <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
+          <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
+          <td th:text="${reservation.guests}">2</td>
+          <td th:text="${reservation.status}">ACTIVE</td>
+          <td>
+            <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{user.modify}"
+               th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}">Modify</a>
+            <a th:href="@{'/reservations/cancel/' + ${reservation.id}}" class="quick-link cancel-reservation" th:text="#{user.cancel}"
+               th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}"
+               data-confirm-message="#{user.cancel.confirm}">Cancel</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+      <div class="quick-links" style="margin-top: 1.5rem;">
+        <a href="/reservations/create" class="quick-link" th:text="#{user.new.reservation}">New Reservation</a>
+      </div>
+    </div>
+
+    <!-- Calendar Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{user.calendar}">Your Calendar</h2>
+        <i class="fas fa-calendar-alt panel-icon"></i>
+      </div>
+      <div class="calendar">
+        <div class="calendar-header">
+          <button><i class="fas fa-chevron-left"></i></button>
+          <h3 th:text="${#temporals.format(T(java.time.LocalDateTime).now(), 'MMMM yyyy')}">May 2025</h3>
+          <button><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <!-- Calendar Grid -->
+        <div class="calendar-grid">
+          <!-- Nombres de los días de la semana -->
+          <div class="calendar-day-header">Lun</div>
+          <div class="calendar-day-header">Mar</div>
+          <div class="calendar-day-header">Mié</div>
+          <div class="calendar-day-header">Jue</div>
+          <div class="calendar-day-header">Vie</div>
+          <div class="calendar-day-header">Sáb</div>
+          <div class="calendar-day-header">Dom</div>
+
+          <!-- Días del calendario (se generarán dinámicamente con JS) -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability Search Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{user.check.availability}">Check Availability</h2>
+        <i class="fas fa-search panel-icon"></i>
+      </div>
+      <form class="search-form" action="/reservations/create" method="get">
+        <input type="datetime-local" name="date" th:placeholder="#{user.select.date}" th:min="${T(java.time.LocalDateTime).now()}">
+        <select name="guests">
+          <option value="" th:text="#{user.select.guests}">Guests</option>
+          <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}">2</option>
+        </select>
+        <button type="submit" th:text="#{user.search}">Search</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Charts and Functionality -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+  // Función para cambiar el idioma
+  function changeLanguage() {
+    const language = document.getElementById('languageSelect').value;
+    window.location.href = '?lang=' + language;
+  }
+
+  document.querySelectorAll('.cancel-reservation').forEach(link => {
+    link.addEventListener('click', function(e) {
+      if(!confirm(this.getAttribute('data-confirm-message'))) {
+        e.preventDefault();
+      }
+    });
+  });
+
+  // Renderizar el gráfico de reservas para el panel de administrador
+  if (document.getElementById('reservationChart')) {
+    const ctx = document.getElementById('reservationChart').getContext('2d');
+    const reservationChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+        datasets: [{
+          label: 'Reservas',
+          data: [5, 7, 10, 12, 18, 25, 20],
+          backgroundColor: '#8C1C13',
+          borderColor: '#8C1C13',
+          tension: 0.2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+
+  // Función para generar el calendario
+  function generateCalendar(year, month) {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const totalDays = lastDay.getDate();
+    const startDay = firstDay.getDay();
+
+    const calendarGrid = document.querySelector('.calendar-grid');
+
+    // Conservar los encabezados de los días
+    const headers = Array.from(calendarGrid.querySelectorAll('.calendar-day-header'));
+
+    // Limpiamos el calendario excepto los encabezados de los días
+    calendarGrid.innerHTML = '';
+
+    // Restaurar los encabezados
+    headers.forEach(header => {
+      calendarGrid.appendChild(header);
+    });
+
+    // Agregamos espacios en blanco para el principio del mes
+    for (let i = 0; i < (startDay === 0 ? 6 : startDay - 1); i++) {
+      const emptyDay = document.createElement('div');
+      emptyDay.className = 'calendar-day empty';
+      calendarGrid.appendChild(emptyDay);
+    }
+
+    // Agregamos los días del mes
+    const today = new Date();
+    for (let i = 1; i <= totalDays; i++) {
+      const dayElement = document.createElement('div');
+      const isToday = today.getDate() === i && today.getMonth() === month && today.getFullYear() === year;
+
+      dayElement.className = isToday ? 'calendar-day today' : 'calendar-day';
+      dayElement.textContent = i;
+
+      // TODO: Marcar días con reservas
+
+      calendarGrid.appendChild(dayElement);
+    }
+  }
+
+  // Iniciamos el calendario con el mes actual
+  const currentDate = new Date();
+  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+</script>
+</body>
+</html>
