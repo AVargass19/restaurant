@@ -81,3 +81,24 @@ SELECT 'AVAILABLE'
         );
 END LOOP;
 END$$;
+
+-- username: jperez
+--password: password123
+--role: user
+
+-- username: david
+--password: david123
+--role: user
+
+-- username: anav
+--password: ana123
+--role: admin
+
+-- username: bero
+--password: bero123
+--role: staff
+
+select * from roles;
+select * from users;
+select * from users_roles;
+
