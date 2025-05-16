@@ -14,11 +14,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import java.util.Locale;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer {
 
     private final CustomUserDetailsService userDetailsService;
 
@@ -29,46 +37,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Deshabilitar CSRF para poder usar Swagger
                 .csrf(AbstractHttpConfigurer::disable)
 
-                // Definir reglas de autorización para URLs
                 .authorizeHttpRequests(authorize -> authorize
                         // Recursos estáticos permitidos para todos
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/img/**").permitAll()
 
                         // Swagger / OpenAPI permitido para todos
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Páginas públicas
-                        .requestMatchers("/", "/login", "/register", "/error/**").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/error/**", "/menu", "/about-us").permitAll()
+
+                        // Permitir cambios de idioma sin autenticación
+                        .requestMatchers(request -> request.getParameterMap().containsKey("lang")).permitAll()
 
                         // Rutas para administradores
-                        .requestMatchers("/admin/**", "/users/**", "/history/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**", "/users/**", "/history/**", "/usuarios/**", "/historial/**").hasRole("ADMIN")
 
                         // Rutas para administradores y staff
                         .requestMatchers("/staff/**").hasAnyRole("ADMIN", "STAFF")
 
                         // Permitir acceso a la gestión de mesas solo a admin y staff
-                        .requestMatchers("/tables/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/tables/**", "/mesas/**").hasAnyRole("ADMIN", "STAFF")
 
                         // Rutas específicas para reservas
-                        .requestMatchers("/reservations/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/reservations/complete/**").hasAnyRole("ADMIN", "STAFF")
+                        .requestMatchers("/reservations/delete/**", "/reservas/eliminar/**").hasRole("ADMIN")
+                        .requestMatchers("/reservations/complete/**", "/reservas/completar/**").hasAnyRole("ADMIN", "STAFF")
 
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()
                 )
 
-                // Configuración del formulario de login
+                // Rest of your configuration...
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
-
-                // Configuración de logout
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/login?logout=true")
@@ -77,15 +84,11 @@ public class SecurityConfig {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-
-                // Recordar usuario (remember-me)
                 .rememberMe(remember -> remember
                         .key("miClaveSecretaParaRememberMe")
-                        .tokenValiditySeconds(86400) // 1 día
+                        .tokenValiditySeconds(86400)
                         .userDetailsService(userDetailsService)
                 )
-
-                // Manejo de excepciones y acceso denegado
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/error/access-denied")
                 );
@@ -104,5 +107,51 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(authProvider);
+    }
+
+    // CONFIGURACIÓN DE INTERNACIONALIZACIÓN
+
+    /**
+     * Define el solucionador de locales para i18n.
+     * Utiliza SessionLocaleResolver para almacenar la preferencia de idioma en la sesión del usuario.
+     * El idioma predeterminado es español (es).
+     */
+    @Bean
+    public SessionLocaleResolver localeResolver() {
+        SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+        localeResolver.setDefaultLocale(new Locale("es"));
+        return localeResolver;
+    }
+
+    /**
+     * Configura el interceptor para cambio de idioma.
+     * Este interceptor detecta el parámetro "lang" en las peticiones y cambia el idioma en base a él.
+     */
+    @Bean
+    public LocaleChangeInterceptor localeChangeInterceptor() {
+        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("lang");
+        return localeChangeInterceptor;
+    }
+
+    /**
+     * Configura la fuente de mensajes para i18n.
+     * Carga los archivos de propiedades messages_XX.properties del classpath.
+     */
+    @Bean
+    public MessageSource messageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasename("messages");
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setUseCodeAsDefaultMessage(true);
+        return messageSource;
+    }
+
+    /**
+     * Registra el interceptor de cambio de idioma en la aplicación.
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeChangeInterceptor());
     }
 }
