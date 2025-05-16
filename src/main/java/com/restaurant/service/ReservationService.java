@@ -13,10 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -62,6 +64,26 @@ public class ReservationService {
     public List<Reservation> findByStatus(Reservation.ReservationStatus status) {
         return reservationRepository.findByStatus(status);
     }
+
+    // Método para encontrar las reservas de hoy para el dashboard
+    public List<Reservation> findReservationsForToday() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
+        return reservationRepository.findAll().stream()
+                .filter(r -> r.getDate().isAfter(startOfDay) && r.getDate().isBefore(endOfDay))
+                .collect(Collectors.toList());
+    }
+
+    // Método para contar reservas activas para estadísticas del dashboard
+    public long countActiveReservations() {
+        return reservationRepository.findByStatus(Reservation.ReservationStatus.ACTIVE).size();
+    }
+
+    // Método para contar reservas de hoy para estadísticas del dashboard
+    public long countTodayReservations() {
+        return findReservationsForToday().size();
+    }
+
 
     @Transactional
     public Reservation create(ReservationDto reservationDto) {
