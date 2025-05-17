@@ -5,307 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{dashboard.title}">Ambrosía - Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --burdeos-principal: #8C1C13;
-      --crema-suave: #F5F5F0;
-      --marron-calido: #5D4037;
-      --gris-marengo: #4F5459;
-      --burdeos-claro: #AB4E3C;
-      --gris-claro: #7E8C8D;
-      --warm-beige: #E6D2B5;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Playfair Display', serif;
-    }
-
-    body {
-      background-color: var(--crema-suave);
-      color: var(--marron-calido);
-    }
-
-    .navbar {
-      background-color: var(--burdeos-principal);
-      color: var(--crema-suave);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    }
-
-    .navbar-logo {
-      font-size: 1.8rem;
-      font-weight: bold;
-      font-style: italic;
-    }
-
-    .navbar-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .navbar-links a {
-      color: var(--crema-suave);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .navbar-links a:hover {
-      color: var(--warm-beige);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .dashboard-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid var(--burdeos-claro);
-    }
-
-    .welcome-message {
-      font-size: 1.8rem;
-      color: var(--burdeos-principal);
-    }
-
-    .language-selector select {
-      padding: 0.5rem;
-      background-color: var(--warm-beige);
-      border: 1px solid var(--marron-calido);
-      border-radius: 4px;
-      color: var(--marron-calido);
-    }
-
-    .dashboard-panels {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem; /* Espacio entre cada panel */
-    }
-
-    .panel {
-      width: 100%;
-      background-color: white;
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--gris-claro);
-    }
-
-    .panel-title {
-      font-size: 1.4rem;
-      color: var(--burdeos-principal);
-    }
-
-    .panel-icon {
-      color: var(--burdeos-principal);
-      font-size: 1.2rem;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-
-    .stat-card {
-      background-color: var(--warm-beige);
-      border-radius: 6px;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-size: 2rem;
-      font-weight: bold;
-      color: var(--burdeos-principal);
-    }
-
-    .stat-label {
-      font-size: 0.9rem;
-      color: var(--marron-calido);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-
-    table th, table td {
-      padding: 0.75rem;
-      text-align: left;
-      border-bottom: 1px solid var(--gris-claro);
-    }
-
-    table th {
-      background-color: var(--gris-marengo);
-      color: var(--crema-suave);
-    }
-
-    .quick-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .quick-link {
-      background-color: var(--burdeos-principal);
-      color: var(--crema-suave);
-      border: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .quick-link:hover {
-      background-color: var(--burdeos-claro);
-    }
-
-    .calendar {
-      width: 100%;
-      margin-top: 1rem;
-    }
-
-    .calendar .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.5rem;
-    }
-
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 0.25rem;
-    }
-
-    .calendar-day {
-      background-color: white;
-      border: 1px solid var(--gris-claro);
-      padding: 0.5rem;
-      text-align: center;
-      height: 60px;
-    }
-
-    .calendar-day.today {
-      background-color: var(--warm-beige);
-      font-weight: bold;
-    }
-
-    .calendar-day.has-reservation {
-      position: relative;
-    }
-
-    .calendar-day.has-reservation::after {
-      content: '';
-      position: absolute;
-      bottom: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background-color: var(--burdeos-principal);
-    }
-
-    .table-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .table-card {
-      background-color: var(--crema-suave);
-      border: 2px solid var(--gris-claro);
-      border-radius: 4px;
-      padding: 1rem;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .table-card:hover {
-      transform: scale(1.05);
-    }
-
-    .table-card.available {
-      border-color: #4CAF50;
-    }
-
-    .table-card.occupied {
-      border-color: var(--burdeos-principal);
-      background-color: rgba(140, 28, 19, 0.1);
-    }
-
-    .table-card.reserved {
-      border-color: #FFC107;
-      background-color: rgba(255, 193, 7, 0.1);
-    }
-
-    .chart-container {
-      width: 100%;
-      height: 250px;
-      margin-top: 1rem;
-    }
-
-    .search-form {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-    }
-
-    .search-form input, .search-form select {
-      padding: 0.5rem;
-      border: 1px solid var(--gris-claro);
-      border-radius: 4px;
-    }
-
-    .search-form button {
-      background-color: var(--burdeos-principal);
-      color: var(--crema-suave);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .calendar-day-header {
-      text-align: center;
-      font-weight: bold;
-      padding: 0.5rem;
-    }
-
-    /* Estilo para dispositivos móviles */
-    @media (max-width: 768px) {
-      .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-  </style>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
 <!-- Navbar -->
@@ -313,7 +13,6 @@
   <div class="navbar-logo">Ambrosía</div>
   <div class="navbar-links">
     <a th:href="@{/index}" th:text="#{nav.home}">Home</a>
-    <a href="#" th:text="#{nav.reservations}">Reservations</a>
     <a th:href="@{/user/profile}" th:text="#{nav.profile}">Profile</a>
     <a th:href="@{/logout}" th:text="#{nav.logout}">Logout</a>
   </div>
@@ -367,9 +66,63 @@
         <h2 class="panel-title" th:text="#{admin.recent.reservations}">Recent Reservations</h2>
         <i class="fas fa-calendar-alt panel-icon"></i>
       </div>
-      <div class="chart-container" id="reservationChart">
+
+      <!-- Si quieres mantener el gráfico para otra visualización, puedes dejarlo como está y añadir la tabla debajo -->
+      <div class="chart-container" id="reservationChart" style="height: 200px; margin-bottom: 15px;">
         <!-- Chart will be rendered here via JavaScript -->
       </div>
+
+      <!-- Tabla de reservas recientes -->
+      <table>
+        <thead>
+        <tr>
+          <th th:text="#{admin.reservation.date}">Date</th>
+          <th th:text="#{admin.reservation.time}">Time</th>
+          <th th:text="#{admin.reservation.customer}">Customer</th>
+          <th th:text="#{admin.reservation.table}">Table</th>
+          <th th:text="#{admin.reservation.guests}">Guests</th>
+          <th th:text="#{admin.reservation.status}">Status</th>
+          <th th:text="#{admin.reservation.actions}">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${recentReservations == null || recentReservations.isEmpty()}">
+          <td colspan="7" class="text-center" th:text="#{admin.no.recent.reservations}">No recent reservations</td>
+        </tr>
+        <tr th:each="reservation : ${recentReservations}" th:unless="${recentReservations == null || recentReservations.isEmpty()}">
+          <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
+          <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
+          <td th:text="${reservation.user.name + ' ' + reservation.user.lastName}">John Doe</td>
+          <td th:text="#{admin.table} + ' ' + ${reservation.table.id}">Table 1</td>
+          <td th:text="${reservation.guests}">4</td>
+          <td>
+          <span class="badge"
+                th:classappend="${reservation.status.name() == 'ACTIVE' ? 'success' : (reservation.status.name() == 'PENDING' ? 'warning' : (reservation.status.name() == 'COMPLETED' ? 'info' : 'danger'))}"
+                th:text="${reservation.status}">ACTIVE</span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="action-btn edit" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a th:if="${reservation.status.name() == 'ACTIVE'}"
+                 th:href="@{/reservations/complete/{id}(id=${reservation.id})}"
+                 class="action-btn complete"
+                 title="Completar">
+                <i class="fas fa-check"></i>
+              </a>
+              <a th:if="${reservation.status.name() == 'ACTIVE'}"
+                 th:href="@{/reservations/cancel/{id}(id=${reservation.id})}"
+                 class="action-btn cancel"
+                 title="Cancelar"
+                 onclick="return confirm('¿Estás seguro de que deseas cancelar esta reserva?')">
+                <i class="fas fa-times"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
 
     <!-- Quick Access Panel -->
@@ -379,10 +132,10 @@
         <i class="fas fa-bolt panel-icon"></i>
       </div>
       <div class="quick-links">
-        <a href="/users" class="quick-link" th:text="#{admin.manage.users}">Manage Users</a>
-        <a href="/tables" class="quick-link" th:text="#{admin.manage.tables}">Manage Tables</a>
-        <a href="/reservations" class="quick-link" th:text="#{admin.manage.reservations}">Manage Reservations</a>
-        <a href="/history" class="quick-link" th:text="#{admin.view.history}">View History</a>
+        <a th:href="@{/users}" class="quick-link" th:text="#{admin.manage.users}">Manage Users</a>
+        <a th:href="@{/tables}" class="quick-link" th:text="#{admin.manage.tables}">Manage Tables</a>
+        <a th:href="@{/reservations}" class="quick-link" th:text="#{admin.manage.reservations}">Manage Reservations</a>
+        <a th:href="@{/history}" class="quick-link" th:text="#{admin.view.history}">View History</a>
       </div>
     </div>
 
@@ -397,17 +150,36 @@
         <tr>
           <th th:text="#{admin.action.date}">Date</th>
           <th th:text="#{admin.action.user}">User</th>
-          <th th:text="#{admin.action.description}">Description</th>
+          <th th:text="#{admin.action.type}">Action Type</th>
+          <th th:text="#{admin.action.reservation}">Reservation</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="action : ${recentActions}">
           <td th:text="${#temporals.format(action.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
           <td th:text="${action.user.name + ' ' + action.user.lastName}">John Doe</td>
-          <td th:text="${action.description}">Created new reservation</td>
+          <td>
+        <span class="badge"
+              th:classappend="${action.action.name() == 'CREATE' ? 'success' : (action.action.name() == 'UPDATE' ? 'warning' : 'danger')}"
+              th:text="${action.action}">CREATE</span>
+          </td>
+          <td>
+            <a th:if="${action.reservation != null}"
+               th:href="@{/reservations/edit/{id}(id=${action.reservation.id})}"
+               th:text="'#' + ${action.reservation.id} + ' - ' + ${#temporals.format(action.reservation.date, 'dd/MM/yyyy HH:mm')}">
+              #1 - 01/06/2025 20:00
+            </a>
+            <span th:unless="${action.reservation != null}" th:text="#{admin.reservation.deleted}">Deleted reservation</span>
+          </td>
+        </tr>
+        <tr th:if="${recentActions.isEmpty()}">
+          <td colspan="4" class="text-center" th:text="#{admin.no.recent.actions}">No recent actions</td>
         </tr>
         </tbody>
       </table>
+      <div class="panel-footer">
+        <a th:href="@{/history}" class="view-all-link" th:text="#{admin.view.all.actions}">View all actions</a>
+      </div>
     </div>
   </div>
 
@@ -469,8 +241,8 @@
         <i class="fas fa-tasks panel-icon"></i>
       </div>
       <div class="quick-links">
-        <a href="/tables" class="quick-link" th:text="#{staff.manage.tables}">Manage Tables</a>
-        <a href="/reservations" class="quick-link" th:text="#{staff.manage.reservations}">Manage Reservations</a>
+        <a th:href="@{/tables}" class="quick-link" th:text="#{staff.manage.tables}">Manage Tables</a>
+        <a th:href="@{/reservations}" class="quick-link" th:text="#{staff.manage.reservations}">Manage Reservations</a>
       </div>
     </div>
   </div>
@@ -502,15 +274,17 @@
           <td>
             <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{user.modify}"
                th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}">Modify</a>
-            <a th:href="@{'/reservations/cancel/' + ${reservation.id}}" class="quick-link cancel-reservation" th:text="#{user.cancel}"
+            <!-- Modificado: Ahora usamos JavaScript para mostrar el modal personalizado -->
+            <a href="javascript:void(0)" class="quick-link cancel-reservation" th:text="#{user.cancel}"
                th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}"
-               data-confirm-message="#{user.cancel.confirm}">Cancel</a>
+               th:data-reservation-id="${reservation.id}"
+               th:data-reservation-date="${#temporals.format(reservation.date, 'dd/MM/yyyy HH:mm')}">Cancel</a>
           </td>
         </tr>
         </tbody>
       </table>
       <div class="quick-links" style="margin-top: 1.5rem;">
-        <a href="/reservations/create" class="quick-link" th:text="#{user.new.reservation}">New Reservation</a>
+        <a th:href="@{/reservations/create}" class="quick-link" th:text="#{user.new.reservation}">New Reservation</a>
       </div>
     </div>
 
@@ -541,21 +315,25 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Availability Search Panel -->
-    <div class="panel">
-      <div class="panel-header">
-        <h2 class="panel-title" th:text="#{user.check.availability}">Check Availability</h2>
-        <i class="fas fa-search panel-icon"></i>
+<!-- Modal para confirmación de cancelación de reserva -->
+<div id="cancelReservationModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div>
+        <i class="fas fa-exclamation-triangle modal-icon"></i>
+        <span class="modal-title" th:text="#{user.cancel.reservation.title}">Cancelar Reserva</span>
       </div>
-      <form class="search-form" action="/reservations/create" method="get">
-        <input type="datetime-local" name="date" th:placeholder="#{user.select.date}" th:min="${T(java.time.LocalDateTime).now()}">
-        <select name="guests">
-          <option value="" th:text="#{user.select.guests}">Guests</option>
-          <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}">2</option>
-        </select>
-        <button type="submit" th:text="#{user.search}">Search</button>
-      </form>
+    </div>
+    <div class="modal-content">
+      <p th:text="#{user.cancel.confirm}">¿Estás seguro de que deseas cancelar esta reserva?</p>
+      <p id="reservationDetails" class="reservation-details"></p>
+    </div>
+    <div class="modal-actions">
+      <button id="cancelModalBtn" class="modal-btn modal-btn-cancel" th:text="#{user.cancel.no}">No, Mantener Reserva</button>
+      <a id="confirmCancelBtn" href="#" class="modal-btn modal-btn-confirm" th:text="#{user.cancel.yes}">Sí, Cancelar Reserva</a>
     </div>
   </div>
 </div>
@@ -569,10 +347,40 @@
     window.location.href = '?lang=' + language;
   }
 
-  document.querySelectorAll('.cancel-reservation').forEach(link => {
-    link.addEventListener('click', function(e) {
-      if(!confirm(this.getAttribute('data-confirm-message'))) {
+  // Modal de confirmación de cancelación
+  document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('cancelReservationModal');
+    const confirmBtn = document.getElementById('confirmCancelBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const reservationDetails = document.getElementById('reservationDetails');
+
+    // Funcionalidad para los botones de cancelar reserva
+    document.querySelectorAll('.cancel-reservation').forEach(link => {
+      link.addEventListener('click', function(e) {
         e.preventDefault();
+        const reservationId = this.getAttribute('data-reservation-id');
+        const reservationDate = this.getAttribute('data-reservation-date');
+
+        // Actualizar el enlace de confirmación con el ID de la reserva
+        confirmBtn.href = `/reservations/cancel/${reservationId}`;
+
+        // Mostrar detalles de la reserva
+        reservationDetails.innerHTML = `<strong>Fecha:</strong> ${reservationDate}`;
+
+        // Mostrar el modal
+        modal.classList.add('active');
+      });
+    });
+
+    // Cerrar el modal al hacer clic en "Cancelar"
+    cancelBtn.addEventListener('click', function() {
+      modal.classList.remove('active');
+    });
+
+    // Cerrar el modal al hacer clic fuera de él
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
       }
     });
   });
