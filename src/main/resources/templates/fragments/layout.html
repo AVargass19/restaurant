@@ -90,26 +90,6 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Inicio</a>
                 </li>
-
-                <!-- Visible para usuarios autenticados -->
-                <li class="nav-item" sec:authorize="isAuthenticated()">
-                    <a class="nav-link" th:href="@{/reservas}" th:text="#{nav.reservas}">Reservas</a>
-                </li>
-
-                <!-- Visible para ADMIN y STAFF -->
-                <li class="nav-item" sec:authorize="hasAnyAuthority('ADMIN', 'STAFF')">
-                    <a class="nav-link" th:href="@{/mesas}" th:text="#{nav.mesas}">Mesas</a>
-                </li>
-
-                <!-- Visible solo para ADMIN -->
-                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                    <a class="nav-link" th:href="@{/usuarios}" th:text="#{nav.usuarios}">Usuarios</a>
-                </li>
-
-                <!-- Visible solo para ADMIN -->
-                <li class="nav-item" sec:authorize="hasAuthority('ADMIN')">
-                    <a class="nav-link" th:href="@{/historial}" th:text="#{nav.historial}">Historial</a>
-                </li>
             </ul>
 
             <!-- Selector de idioma -->
