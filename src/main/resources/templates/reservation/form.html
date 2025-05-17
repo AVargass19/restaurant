@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="${reservationDto.id == null} ? #{reservation.create.title} : #{reservation.edit.title}">
+                Nueva Reserva
+            </h2>
+            <i class="fas fa-calendar-plus panel-icon"></i>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="${reservationDto.id == null ? '/reservations/create' : '/reservations/edit/' + reservationDto.id}" method="post" th:object="${reservationDto}">
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Selector de usuario (solo para admin) -->
+            <div class="form-group" th:if="${users != null}">
+                <label for="userId" th:text="#{reservation.user}">Usuario</label>
+                <select id="userId" th:field="*{userId}" class="form-control" required>
+                    <option value="" th:text="#{reservation.select.user}">-- Seleccionar Usuario --</option>
+                    <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.name + ' ' + user.lastName}">Juan Pérez</option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('userId')}" th:errors="*{userId}"></div>
+            </div>
+
+            <!-- Selector de mesa -->
+            <div class="form-group">
+                <label for="tableId" th:text="#{reservation.table}">Mesa</label>
+                <select id="tableId" th:field="*{tableId}" class="form-control" required>
+                    <option value="" th:text="#{reservation.select.table}">-- Seleccionar Mesa --</option>
+                    <option th:each="table : ${availableTables}" th:value="${table.id}" th:text="#{reservation.table} + ' ' + ${table.id}">Mesa 1</option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('tableId')}" th:errors="*{tableId}"></div>
+            </div>
+
+            <!-- Fecha y hora -->
+            <div class="form-group">
+                <label for="date" th:text="#{reservation.date.time}">Fecha y Hora</label>
+                <input type="datetime-local" id="date" th:field="*{date}" class="form-control" required th:min="${T(java.time.LocalDateTime).now()}"/>
+                <div class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+            </div>
+
+            <!-- Número de invitados -->
+            <div class="form-group">
+                <label for="guests" th:text="#{reservation.guests}">Número de Invitados</label>
+                <select id="guests" th:field="*{guests}" class="form-control" required>
+                    <option th:each="i : ${#numbers.sequence(1, 10)}" th:value="${i}" th:text="${i}">4</option>
+                </select>
+                <div class="text-danger" th:if="${#fields.hasErrors('guests')}" th:errors="*{guests}"></div>
+            </div>
+
+            <!-- Estado (solo para edición) -->
+            <div class="form-group" th:if="${statuses != null}">
+                <label for="status" th:text="#{reservation.status}">Estado</label>
+                <select id="status" th:field="*{status}" class="form-control">
+                    <option th:each="statusOption : ${statuses}" th:value="${statusOption}" th:text="${statusOption}">ACTIVE</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="quick-link" th:text="${reservationDto.id == null} ? #{reservation.create.button} : #{reservation.edit.button}">Guardar</button>
+                <a th:href="@{/dashboard}" class="quick-link" th:text="#{reservation.cancel.button}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
