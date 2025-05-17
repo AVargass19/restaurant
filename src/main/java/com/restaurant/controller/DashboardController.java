@@ -69,6 +69,10 @@ public class DashboardController {
                 recentActions = recentActions.subList(0, 10);
             }
             model.addAttribute("recentActions", recentActions);
+
+            // Añadir reservas recientes para el panel de gráfico
+            List<Reservation> recentReservations = reservationService.findRecentReservations(10);
+            model.addAttribute("recentReservations", recentReservations);
         }
 
         // Si es STAFF
