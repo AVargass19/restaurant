@@ -47,7 +47,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // Páginas públicas
-                        .requestMatchers("/", "/login", "/register", "/error/**", "/menu", "/about-us").permitAll()
+                        .requestMatchers("/", "/index", "/login", "/register", "/error/**", "/menu", "/about-us").permitAll()
 
                         // Permitir cambios de idioma sin autenticación
                         .requestMatchers(request -> request.getParameterMap().containsKey("lang")).permitAll()
@@ -61,15 +61,25 @@ public class SecurityConfig implements WebMvcConfigurer {
                         // Permitir acceso a la gestión de mesas solo a admin y staff
                         .requestMatchers("/tables/**", "/mesas/**").hasAnyRole("ADMIN", "STAFF")
 
-                        // Rutas específicas para reservas
+                        // Excepción para la vista de mesas disponibles (accesible para todos los usuarios autenticados)
+                        .requestMatchers("/tables/available").authenticated()
+
+                        // Permitir a los usuarios regulares acceder a su perfil
+                        .requestMatchers("/user/profile/**").authenticated()
+
+                        // Rutas específicas para reservas - más detalladas
                         .requestMatchers("/reservations/delete/**", "/reservas/eliminar/**").hasRole("ADMIN")
                         .requestMatchers("/reservations/complete/**", "/reservas/completar/**").hasAnyRole("ADMIN", "STAFF")
+                        // Permitir a usuarios autenticados acceder a crear, ver y gestionar sus propias reservas
+                        .requestMatchers("/reservations", "/reservations/create", "/reservations/edit/**", "/reservations/cancel/**").authenticated()
+
+                        // Dashboard accesible para todos los usuarios autenticados (cada rol ve su propia versión)
+                        .requestMatchers("/dashboard").authenticated()
 
                         // Cualquier otra solicitud requiere autenticación
                         .anyRequest().authenticated()
                 )
 
-                // Rest of your configuration...
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
