@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="#{reservation.list.title}">Lista de Reservas</h2>
+            <i class="fas fa-calendar-check panel-icon"></i>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="quick-links" th:if="${isAdmin || isStaff}">
+            <a th:href="@{/reservations/create}" class="quick-link" th:text="#{reservation.create}">Nueva Reserva</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{reservation.id}">ID</th>
+                <th th:text="#{reservation.date}">Fecha</th>
+                <th th:text="#{reservation.time}">Hora</th>
+                <th th:text="#{reservation.table}">Mesa</th>
+                <th th:if="${isAdmin || isStaff}" th:text="#{reservation.customer}">Cliente</th>
+                <th th:text="#{reservation.guests}">Invitados</th>
+                <th th:text="#{reservation.status}">Estado</th>
+                <th th:text="#{reservation.actions}">Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reservation : ${reservations}">
+                <td th:text="${reservation.id}">1</td>
+                <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
+                <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">19:30</td>
+                <td th:text="#{reservation.table} + ' ' + ${reservation.table.id}">Mesa 1</td>
+                <td th:if="${isAdmin || isStaff}" th:text="${reservation.user.name + ' ' + reservation.user.lastName}">Juan Pérez</td>
+                <td th:text="${reservation.guests}">4</td>
+                <td th:text="${reservation.status}">ACTIVE</td>
+                <td>
+                    <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.edit}">Editar</a>
+                    <a th:if="${isAdmin}" th:href="@{'/reservations/delete/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.delete}"
+                       th:onclick="'return confirm(\'' + #{reservation.delete.confirm} + '\');'">Eliminar</a>
+                    <a th:href="@{'/reservations/complete/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.complete}"
+                       th:if="${(isStaff || isAdmin) && reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Completar</a>
+                    <a th:href="@{'/reservations/cancel/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.cancel}"
+                       th:onclick="'return confirm(\'' + #{reservation.cancel.confirm} + '\');'"
+                       th:if="${reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Cancelar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${reservations.isEmpty()}" class="alert alert-info" th:text="#{reservation.no.data}">
+            No hay reservas disponibles
+        </div>
+    </div>
+</div>
+</body>
+</html>
