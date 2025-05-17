@@ -1,0 +1,463 @@
+:root {
+    --burdeos-principal: #8C1C13;
+    --crema-suave: #F5F5F0;
+    --marron-calido: #5D4037;
+    --gris-marengo: #4F5459;
+    --burdeos-claro: #AB4E3C;
+    --gris-claro: #7E8C8D;
+    --warm-beige: #E6D2B5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Playfair Display', serif;
+}
+
+body {
+    background-color: var(--crema-suave);
+    color: var(--marron-calido);
+}
+
+.navbar {
+    background-color: var(--burdeos-principal);
+    color: var(--crema-suave);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.navbar-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.navbar-links a {
+    color: var(--crema-suave);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+    color: var(--warm-beige);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--burdeos-claro);
+}
+
+.welcome-message {
+    font-size: 1.8rem;
+    color: var(--burdeos-principal);
+}
+
+.language-selector select {
+    padding: 0.5rem;
+    background-color: var(--warm-beige);
+    border: 1px solid var(--marron-calido);
+    border-radius: 4px;
+    color: var(--marron-calido);
+}
+
+.dashboard-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Espacio entre cada panel */
+}
+
+.panel {
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--gris-claro);
+}
+
+.panel-title {
+    font-size: 1.4rem;
+    color: var(--burdeos-principal);
+}
+
+.panel-icon {
+    color: var(--burdeos-principal);
+    font-size: 1.2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background-color: var(--warm-beige);
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--burdeos-principal);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--marron-calido);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+table th, table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gris-claro);
+}
+
+table th {
+    background-color: var(--gris-marengo);
+    color: var(--crema-suave);
+}
+
+.quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.quick-link {
+    background-color: var(--burdeos-principal);
+    color: var(--crema-suave);
+    border: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.quick-link:hover {
+    background-color: var(--burdeos-claro);
+}
+
+.calendar {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.calendar .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+}
+
+.calendar-day {
+    background-color: white;
+    border: 1px solid var(--gris-claro);
+    padding: 0.5rem;
+    text-align: center;
+    height: 60px;
+}
+
+.calendar-day.today {
+    background-color: var(--warm-beige);
+    font-weight: bold;
+}
+
+.calendar-day.has-reservation {
+    position: relative;
+}
+
+.calendar-day.has-reservation::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--burdeos-principal);
+}
+
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.table-card {
+    background-color: var(--crema-suave);
+    border: 2px solid var(--gris-claro);
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.table-card:hover {
+    transform: scale(1.05);
+}
+
+.table-card.available {
+    border-color: #4CAF50;
+}
+
+.table-card.occupied {
+    border-color: var(--burdeos-principal);
+    background-color: rgba(140, 28, 19, 0.1);
+}
+
+.table-card.reserved {
+    border-color: #FFC107;
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.chart-container {
+    width: 100%;
+    height: 250px;
+    margin-top: 1rem;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.search-form input, .search-form select {
+    padding: 0.5rem;
+    border: 1px solid var(--gris-claro);
+    border-radius: 4px;
+}
+
+.search-form button {
+    background-color: var(--burdeos-principal);
+    color: var(--crema-suave);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 0.5rem;
+}
+
+/* Estilos para los badges */
+.badge {
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: normal;
+    text-transform: uppercase;
+}
+
+.badge.success {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.badge.warning {
+    background-color: #FFC107;
+    color: #333;
+}
+
+.badge.danger {
+    background-color: #F44336;
+    color: white;
+}
+
+.badge.info {
+    background-color: #2196F3;
+    color: white;
+}
+
+/* Estilos para los botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    color: white;
+}
+
+.action-btn.edit {
+    background-color: #2196F3;
+}
+
+.action-btn.complete {
+    background-color: #4CAF50;
+}
+
+.action-btn.cancel {
+    background-color: #F44336;
+}
+
+.action-btn:hover {
+    opacity: 0.8;
+}
+
+/* Overlay que cubre toda la pantalla */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Contenedor del modal */
+.modal-container {
+    background-color: #fff;
+    width: 90%;
+    max-width: 450px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: translateY(-50px);
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active .modal-container {
+    transform: translateY(0);
+}
+
+/* Cabecera del modal */
+.modal-header {
+    padding: 16px 20px;
+    background-color: #8C1C13;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.modal-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Contenido del modal */
+.modal-content {
+    padding: 20px;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Botones del modal */
+.modal-actions {
+    display: flex;
+    padding: 16px 20px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.modal-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.modal-btn-cancel {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.modal-btn-cancel:hover {
+    background-color: #d5d5d5;
+}
+
+.modal-btn-confirm {
+    background-color: #8C1C13;
+    color: white;
+}
+
+.modal-btn-confirm:hover {
+    background-color: #7a1811;
+}
+
+/* Estilo para dispositivos móviles */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
