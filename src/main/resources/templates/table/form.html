@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head}"></head><head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="${table.id == null ? #{table.create.title} : #{table.edit.title}}">Nueva Mesa</h2>
+            <i class="fas fa-utensils panel-icon"></i>
+        </div>
+
+        <form th:action="${table.id == null ? '/tables/create' : '/tables/edit/' + table.id}" method="post" th:object="${table}">
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Estado de la mesa -->
+            <div class="form-group">
+                <label for="status" th:text="#{table.status}">Estado</label>
+                <select id="status" th:field="*{status}" class="form-control" required>
+                    <option th:each="statusOption : ${statuses}" th:value="${statusOption}" th:text="${statusOption}">AVAILABLE</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="quick-link" th:text="${table.id == null ? #{table.create.button} : #{table.edit.button}}">Guardar</button>
+                <a th:href="@{/tables}" class="quick-link" th:text="#{table.cancel.button}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

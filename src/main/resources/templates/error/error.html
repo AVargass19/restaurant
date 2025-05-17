@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="#{error.title}">Error</h2>
+            <i class="fas fa-exclamation-circle panel-icon"></i>
+        </div>
+
+        <div class="error-message">
+            <p th:text="${message != null ? message : #{error.default.message}}">Ha ocurrido un error inesperado.</p>
+            <div class="quick-links">
+                <a th:href="@{/dashboard}" class="quick-link" th:text="#{error.back.dashboard}">Volver al Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

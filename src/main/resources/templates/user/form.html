@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="${userDto.id == null ? #{user.create.title} : #{user.edit.title}}">Nuevo Usuario</h2>
+            <i class="fas fa-user-plus panel-icon"></i>
+        </div>
+
+        <form th:action="${userDto.id == null ? '/users/create' : '/users/edit/' + userDto.id}" method="post" th:object="${userDto}">
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Nombre -->
+            <div class="form-group">
+                <label for="name" th:text="#{user.name}">Nombre</label>
+                <input type="text" id="name" th:field="*{name}" class="form-control" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+            </div>
+
+            <!-- Apellidos -->
+            <div class="form-group">
+                <label for="lastName" th:text="#{user.lastName}">Apellidos</label>
+                <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required />
+                <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+            </div>
+
+            <!-- Nombre de usuario -->
+            <div class="form-group">
+                <label for="username" th:text="#{user.username}">Nombre de usuario</label>
+                <input type="text" id="username" th:field="*{username}" class="form-control" required th:readonly="${userDto.id != null}" />
+                <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+
+            <!-- Contraseña -->
+            <div class="form-group">
+                <label for="password" th:text="#{user.password}">Contraseña</label>
+                <input type="password" id="password" th:field="*{password}" class="form-control" th:required="${userDto.id == null}" />
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <!-- Confirmar Contraseña -->
+            <div class="form-group">
+                <label for="confirmPassword" th:text="#{user.confirm.password}">Confirmar Contraseña</label>
+                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" th:required="${userDto.id == null}" />
+                <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="form-group">
+                <label for="phone" th:text="#{user.phone}">Teléfono</label>
+                <input type="text" id="phone" th:field="*{phone}" class="form-control" />
+                <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+
+            <!-- Rol -->
+            <div class="form-group">
+                <label for="role" th:text="#{user.role}">Rol</label>
+                <select id="role" th:field="*{role}" class="form-control" required>
+                    <option th:each="role : ${roles}" th:value="${role.name}" th:text="${role.name}">ROLE_USER</option>
+                </select>
+            </div>
+
+            <!-- Estado -->
+            <div class="form-group">
+                <label for="enabled" th:text="#{user.status}">Estado</label>
+                <select id="enabled" th:field="*{enabled}" class="form-control">
+                    <option th:value="true" th:text="#{user.active}">Activo</option>
+                    <option th:value="false" th:text="#{user.inactive}">Inactivo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="quick-link" th:text="${userDto.id == null ? #{user.create.button} : #{user.edit.button}}">Guardar</button>
+                <a th:href="@{/users}" class="quick-link" th:text="#{user.cancel.button}">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

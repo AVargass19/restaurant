@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="#{history.list.title}">Historial de Reservas</h2>
+            <i class="fas fa-history panel-icon"></i>
+        </div>
+
+        <div class="quick-links">
+            <a th:href="@{/history}" class="quick-link" th:text="#{history.all}">Todas</a>
+            <a th:href="@{/history/action/CREATE}" class="quick-link" th:text="#{history.create}">Creaciones</a>
+            <a th:href="@{/history/action/UPDATE}" class="quick-link" th:text="#{history.update}">Modificaciones</a>
+            <a th:href="@{/history/action/DELETE}" class="quick-link" th:text="#{history.delete}">Eliminaciones</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{history.id}">ID</th>
+                <th th:text="#{history.date}">Fecha</th>
+                <th th:text="#{history.action}">Acción</th>
+                <th th:text="#{history.reservation}">Reserva</th>
+                <th th:text="#{history.user}">Usuario</th>
+                <th th:text="#{history.details}">Detalles</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="history : ${historyList}">
+                <td th:text="${history.id}">1</td>
+                <td th:text="${#temporals.format(history.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
+                <td th:text="${history.action}">CREATE</td>
+                <td>
+              <span th:if="${history.reservation != null}">
+                <a th:href="@{'/reservations/edit/' + ${history.reservation.id}}" th:text="${'#' + history.reservation.id}">Reserva #1</a>
+              </span>
+                    <span th:unless="${history.reservation != null}" th:text="#{history.reservation.deleted}">Eliminada</span>
+                </td>
+                <td th:text="${history.user.name + ' ' + history.user.lastName}">Juan Pérez</td>
+                <td th:text="${history.details}">Creación de reserva para el 20/05/2025</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${historyList.isEmpty()}" class="alert alert-info" th:text="#{history.no.data}">
+            No hay registros en el historial
+        </div>
+    </div>
+</div>
+</body>
+</html>

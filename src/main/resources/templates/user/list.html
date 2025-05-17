@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+  <div class="panel">
+    <div class="panel-header">
+      <h2 class="panel-title" th:text="#{user.list.title}">Usuarios</h2>
+      <i class="fas fa-users panel-icon"></i>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+      <span th:text="${successMessage}"></span>
+    </div>
+
+    <div class="quick-links">
+      <a th:href="@{/users/create}" class="quick-link" th:text="#{user.create}">Nuevo Usuario</a>
+    </div>
+
+    <table>
+      <thead>
+      <tr>
+        <th th:text="#{user.id}">ID</th>
+        <th th:text="#{user.name}">Nombre</th>
+        <th th:text="#{user.lastName}">Apellidos</th>
+        <th th:text="#{user.username}">Usuario</th>
+        <th th:text="#{user.phone}">Teléfono</th>
+        <th th:text="#{user.role}">Rol</th>
+        <th th:text="#{user.status}">Estado</th>
+        <th th:text="#{user.actions}">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="user : ${users}">
+        <td th:text="${user.id}">1</td>
+        <td th:text="${user.name}">Juan</td>
+        <td th:text="${user.lastName}">Pérez</td>
+        <td th:text="${user.username}">jperez</td>
+        <td th:text="${user.phone}">123456789</td>
+        <td th:text="${user.roles[0].name}">ROLE_USER</td>
+        <td th:text="${user.enabled ? #{user.active} : #{user.inactive}}">Activo</td>
+        <td>
+          <a th:href="@{'/users/edit/' + ${user.id}}" class="quick-link" th:text="#{user.edit}">Editar</a>
+          <a th:href="@{'/users/delete/' + ${user.id}}" class="quick-link" th:text="#{user.delete}"
+             th:onclick="'return confirm(\'' + #{user.delete.confirm} + '\');'">Eliminar</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <div th:if="${users.isEmpty()}" class="alert alert-info" th:text="#{user.no.data}">
+      No hay usuarios registrados
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="#{user.profile.title}">Mi Perfil</h2>
+            <i class="fas fa-user-circle panel-icon"></i>
+        </div>
+
+        <div class="profile-info">
+            <div class="profile-section">
+                <h3 th:text="#{user.personal.info}">Información Personal</h3>
+                <p><strong th:text="#{user.name} + ':'">Nombre:</strong> <span th:text="${user.name}">Juan</span></p>
+                <p><strong th:text="#{user.lastName} + ':'">Apellidos:</strong> <span th:text="${user.lastName}">Pérez</span></p>
+                <p><strong th:text="#{user.username} + ':'">Usuario:</strong> <span th:text="${user.username}">jperez</span></p>
+                <p><strong th:text="#{user.phone} + ':'">Teléfono:</strong> <span th:text="${user.phone}">123456789</span></p>
+                <p><strong th:text="#{user.role} + ':'">Rol:</strong> <span th:text="${user.roles[0].name}">ROLE_USER</span></p>
+            </div>
+
+            <div class="profile-section">
+                <h3 th:text="#{user.update.profile}">Actualizar Perfil</h3>
+                <form th:action="@{/user/profile/update}" method="post" th:object="${userDto}">
+                    <input type="hidden" th:field="*{id}" />
+
+                    <!-- Teléfono -->
+                    <div class="form-group">
+                        <label for="phone" th:text="#{user.phone}">Teléfono</label>
+                        <input type="text" id="phone" th:field="*{phone}" class="form-control" />
+                        <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                    </div>
+
+                    <!-- Contraseña actual -->
+                    <div class="form-group">
+                        <label for="currentPassword" th:text="#{user.current.password}">Contraseña Actual</label>
+                        <input type="password" id="currentPassword" name="currentPassword" class="form-control" />
+                    </div>
+
+                    <!-- Nueva Contraseña -->
+                    <div class="form-group">
+                        <label for="password" th:text="#{user.new.password}">Nueva Contraseña</label>
+                        <input type="password" id="password" th:field="*{password}" class="form-control" />
+                        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+
+                    <!-- Confirmar Nueva Contraseña -->
+                    <div class="form-group">
+                        <label for="confirmPassword" th:text="#{user.confirm.password}">Confirmar Nueva Contraseña</label>
+                        <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" />
+                        <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="quick-link" th:text="#{user.update.button}">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

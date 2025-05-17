@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2 class="panel-title" th:text="#{table.available.title}">Mesas Disponibles</h2>
+            <i class="fas fa-check-circle panel-icon"></i>
+        </div>
+
+        <div class="table-grid">
+            <div th:each="table : ${tables}" class="table-card available">
+                <div th:text="#{table.number} + ' ' + ${table.id}">Mesa 1</div>
+                <div th:text="#{table.capacity} + ': ' + ${table.capacity}">Capacidad: 4</div>
+                <div th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}" class="table-actions">
+                    <a th:href="@{/reservations/create(tableId=${table.id})}" class="quick-link" th:text="#{table.reserve}">Reservar</a>
+                </div>
+                <div th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_STAFF'')')}" class="table-actions">
+                    <a th:href="@{'/tables/status/' + ${table.id} + '/OCCUPIED'}" class="quick-link" th:text="#{table.status.occupied}">Marcar Ocupada</a>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${tables.isEmpty()}" class="alert alert-info" th:text="#{table.no.available}">
+            No hay mesas disponibles en este momento
+        </div>
+    </div>
+</div>
+</body>
+</html>
