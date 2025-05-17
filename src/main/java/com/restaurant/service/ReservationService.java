@@ -84,6 +84,16 @@ public class ReservationService {
         return findReservationsForToday().size();
     }
 
+    // Método para encontrar las reservas más recientes (limitadas por cantidad)
+    public List<Reservation> findRecentReservations(int limit) {
+        // Obtener todas las reservas y ordenarlas por fecha descendente
+        List<Reservation> allReservations = reservationRepository.findAll();
+        return allReservations.stream()
+                .sorted((r1, r2) -> r2.getDate().compareTo(r1.getDate())) // Ordenar por fecha descendente
+                .limit(limit) // Limitar la cantidad de resultados
+                .collect(Collectors.toList());
+    }
+
 
     @Transactional
     public Reservation create(ReservationDto reservationDto) {
