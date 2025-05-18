@@ -1,33 +1,66 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head('Mesas Disponibles')}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/table/available.css}">
+<link rel="stylesheet" th:href="@{/css/table/common.css}">
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-    <div class="panel">
+    <div class="table-list-panel">
         <div class="panel-header">
-            <h2 class="panel-title" th:text="#{table.available.title}">Mesas Disponibles</h2>
-            <i class="fas fa-check-circle panel-icon"></i>
+            <div class="header-content">
+                <i class="fas fa-chair panel-icon"></i>
+                <h2 class="panel-title" th:text="#{table.available.title}">Mesas Disponibles</h2>
+            </div>
+            <div class="table-icon-container">
+                <i class="fas fa-check-circle reservation-icon"></i>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle alert-icon"></i>
+            <span th:text="${successMessage}"></span>
         </div>
 
         <div class="table-grid">
             <div th:each="table : ${tables}" class="table-card available">
-                <div th:text="#{table.number} + ' ' + ${table.id}">Mesa 1</div>
-                <div th:text="#{table.capacity} + ': ' + ${table.capacity}">Capacidad: 4</div>
+                <div class="table-header">
+                    <span class="table-number" th:text="#{table.number} + ' ' + ${table.id}">Mesa 1</span>
+                    <span class="status-badge status-available">Disponible</span>
+                </div>
                 <div th:if="${#authorization.expression('hasRole(''ROLE_USER'')')}" class="table-actions">
-                    <a th:href="@{/reservations/create(tableId=${table.id})}" class="quick-link" th:text="#{table.reserve}">Reservar</a>
+                    <a th:href="@{/reservations/create(tableId=${table.id})}" class="btn-primary">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span th:text="#{table.reserve}">Reservar</span>
+                    </a>
                 </div>
                 <div th:if="${#authorization.expression('hasAnyRole(''ROLE_ADMIN'', ''ROLE_STAFF'')')}" class="table-actions">
-                    <a th:href="@{'/tables/status/' + ${table.id} + '/OCCUPIED'}" class="quick-link" th:text="#{table.status.occupied}">Marcar Ocupada</a>
+                    <a th:href="@{'/tables/status/' + ${table.id} + '/OCCUPIED'}" class="btn-secondary">
+                        <i class="fas fa-utensils"></i>
+                        <span th:text="#{table.status.occupied}">Marcar Ocupada</span>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <div th:if="${tables.isEmpty()}" class="alert alert-info" th:text="#{table.no.available}">
-            No hay mesas disponibles en este momento
+        <div th:if="${tables.isEmpty()}" class="no-data-message">
+            <i class="fas fa-info-circle no-data-icon"></i>
+            <p th:text="#{table.no.available}">No hay mesas disponibles en este momento</p>
+        </div>
+
+        <div class="panel-footer">
+            <a th:href="@{/dashboard}" class="btn-primary">
+                <i class="fas fa-home"></i>
+                <span>Volver al Dashboard</span>
+            </a>
         </div>
     </div>
 </div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/js/table.js}"></script>
 </body>
 </html>

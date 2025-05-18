@@ -1,33 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head}"></head><head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head('Gestión de Mesa')}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/table/form.css}">
+<link rel="stylesheet" th:href="@{/css/table/common.css}">
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-    <div class="panel">
+    <div class="table-panel">
         <div class="panel-header">
-            <h2 class="panel-title" th:text="${table.id == null ? #{table.create.title} : #{table.edit.title}}">Nueva Mesa</h2>
-            <i class="fas fa-utensils panel-icon"></i>
+            <div class="header-content">
+                <i class="fas fa-edit panel-icon"></i>
+                <h2 class="panel-title" th:text="${table.id == null ? #{table.create.title} : #{table.edit.title}}">Nueva Mesa</h2>
+            </div>
+            <div class="table-icon-container">
+                <i class="fas fa-utensils reservation-icon"></i>
+            </div>
         </div>
 
-        <form th:action="${table.id == null ? '/tables/create' : '/tables/edit/' + table.id}" method="post" th:object="${table}">
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle alert-icon"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <form th:action="${table.id == null ? '/tables/create' : '/tables/edit/' + table.id}"
+              method="post"
+              th:object="${table}"
+              class="table-form">
             <input type="hidden" th:field="*{id}" />
 
             <!-- Estado de la mesa -->
             <div class="form-group">
                 <label for="status" th:text="#{table.status}">Estado</label>
-                <select id="status" th:field="*{status}" class="form-control" required>
-                    <option th:each="statusOption : ${statuses}" th:value="${statusOption}" th:text="${statusOption}">AVAILABLE</option>
-                </select>
+                <div class="input-with-icon">
+                    <i class="fas fa-tag input-icon"></i>
+                    <select id="status" th:field="*{status}" class="form-control" required>
+                        <option th:each="statusOption : ${statuses}"
+                                th:value="${statusOption}"
+                                th:text="${statusOption}">AVAILABLE</option>
+                    </select>
+                </div>
+                <div class="text-danger" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="quick-link" th:text="${table.id == null ? #{table.create.button} : #{table.edit.button}}">Guardar</button>
-                <a th:href="@{/tables}" class="quick-link" th:text="#{table.cancel.button}">Cancelar</a>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${table.id == null ? #{table.create.button} : #{table.edit.button}}">Guardar</span>
+                </button>
+                <a th:href="@{/tables}" class="btn-secondary">
+                    <i class="fas fa-times"></i>
+                    <span th:text="#{table.cancel.button}">Cancelar</span>
+                </a>
             </div>
         </form>
     </div>
 </div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/js/table.js}"></script>
 </body>
 </html>

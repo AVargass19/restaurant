@@ -1,0 +1,263 @@
+/* Estilos para la Vista de Tablas */
+:root {
+    --burdeos-principal: #8C1C13;
+    --burdeos-claro: #A52A2A;
+    --marron-calido: #594A3C;
+    --crema-suave: #F2E9DC;
+    --warm-beige: #E6D2B5;
+    --gris-claro: #CCCCCC;
+    --gris-marengo: #4A4A4A;
+}
+
+.table-list-panel {
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--burdeos-claro);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.panel-title {
+    font-size: 1.6rem;
+    color: var(--burdeos-principal);
+    margin: 0;
+}
+
+.panel-icon {
+    color: var(--burdeos-principal);
+    font-size: 1.4rem;
+}
+
+.table-icon-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--burdeos-principal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reservation-icon {
+    color: var(--crema-suave);
+    font-size: 1.8rem;
+}
+
+/* Grid de tarjetas de mesa */
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.table-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.table-card.available {
+    border-left: 4px solid #4CAF50;
+}
+
+.table-card.occupied {
+    border-left: 4px solid #F44336;
+}
+
+.table-card.reserved {
+    border-left: 4px solid #2196F3;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--marron-calido);
+}
+
+.table-capacity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gris-marengo);
+}
+
+.capacity-icon {
+    color: var(--burdeos-principal);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-available {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #2e7d32;
+}
+
+.status-occupied {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #d32f2f;
+}
+
+.status-reserved {
+    background-color: rgba(33, 150, 243, 0.2);
+    color: #1565c0;
+}
+
+.table-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: var(--burdeos-principal);
+    color: var(--crema-suave);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--burdeos-claro);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(140, 28, 19, 0.3);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--burdeos-principal);
+    border: 1px solid var(--burdeos-principal);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(140, 28, 19, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Alerts */
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.alert-success {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+}
+
+.alert-danger {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #d32f2f;
+    border: 1px solid #d32f2f;
+}
+
+.alert-info {
+    background-color: rgba(33, 150, 243, 0.15);
+    color: #1565c0;
+    border: 1px solid #1565c0;
+}
+
+.alert-icon {
+    font-size: 1.25rem;
+}
+
+/* Mensaje cuando no hay datos */
+.no-data-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--gris-claro);
+}
+
+.no-data-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Estilos responsivos */
+@media (max-width: 768px) {
+    .table-list-panel {
+        padding: 1rem;
+    }
+
+    .table-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .header-actions {
+        width: 100%;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+}

@@ -1,0 +1,128 @@
+/* Estilos adicionales para tooltip y efectos */
+:root {
+    --burdeos-principal: #8C1C13;
+    --burdeos-claro: #A52A2A;
+    --marron-calido: #594A3C;
+    --crema-suave: #F2E9DC;
+    --warm-beige: #E6D2B5;
+    --gris-claro: #CCCCCC;
+    --gris-marengo: #4A4A4A;
+}
+
+/* Tooltip personalizado */
+.tooltip {
+    position: absolute;
+    background-color: var(--gris-marengo);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s, transform 0.3s;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--gris-marengo);
+}
+
+.tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Efectos para las tarjetas de mesa */
+.table-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.table-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, var(--burdeos-principal), var(--burdeos-claro));
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+.table-card:hover::before {
+    transform: translateY(0);
+}
+
+/* Animación para las alertas */
+.alert {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Spinner para carga */
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(140, 28, 19, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--burdeos-principal);
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mejoras para la visualización responsiva */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 1rem;
+    }
+
+    .table-list-panel, .table-panel {
+        border-radius: 6px;
+    }
+}
+
+/* Estilos para mensajes de validación */
+.invalid-feedback {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
