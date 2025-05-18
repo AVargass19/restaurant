@@ -5,6 +5,7 @@ import com.restaurant.model.RestaurantTable;
 import com.restaurant.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -19,11 +20,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByStatus(Reservation.ReservationStatus status);
 
-    List<Reservation> findByTable(RestaurantTable table);
+    // Método modificado: ahora toma directamente rango de fechas y estado
+    @Query("SELECT r FROM Reservation r WHERE r.table.id = :tableId AND r.date BETWEEN :startTime AND :endTime AND r.status = :status")
+    List<Reservation> findByTableAndDateBetweenAndStatus(
+            @Param("tableId") Long tableId,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime,
+            @Param("status") Reservation.ReservationStatus status);
 
-    @Query("SELECT r FROM Reservation r WHERE r.date BETWEEN ?1 AND ?2 AND r.status = ?3")
-    List<Reservation> findByDateBetweenAndStatus(LocalDateTime start, LocalDateTime end, Reservation.ReservationStatus status);
-
-    @Query("SELECT r FROM Reservation r WHERE r.table.id = ?1 AND r.date BETWEEN ?2 AND ?3 AND r.status = ?4")
-    List<Reservation> findByTableAndDateBetweenAndStatus(Long tableId, LocalDateTime start, LocalDateTime end, Reservation.ReservationStatus status);
+    // Nuevo método para encontrar todas las reservas activas dentro de un rango de tiempo
+    @Query("SELECT r FROM Reservation r WHERE r.date BETWEEN :startTime AND :endTime AND r.status = 'ACTIVE'")
+    List<Reservation> findActiveReservationsInTimeRange(
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime);
 }
