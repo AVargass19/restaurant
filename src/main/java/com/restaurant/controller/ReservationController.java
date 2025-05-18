@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -71,9 +72,21 @@ public class ReservationController {
 
     @GetMapping("/create")
     @Operation(summary = "Mostrar formulario de creación", description = "Formulario para crear una nueva reserva")
-    public String showCreateForm(Model model) {
-        model.addAttribute("reservationDto", new ReservationDto());
-        model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+    public String showCreateForm(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime date,
+            Model model) {
+
+        ReservationDto reservationDto = new ReservationDto();
+
+        // Si se proporciona una fecha, la establecemos en el DTO
+        if (date != null) {
+            reservationDto.setDate(date);
+            model.addAttribute("availableTables", tableService.findAvailableTablesForDateTime(date));
+        } else {
+            model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+        }
+
+        model.addAttribute("reservationDto", reservationDto);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAdmin = authentication.getAuthorities().stream()
@@ -86,6 +99,14 @@ public class ReservationController {
         return "reservation/form";
     }
 
+    // Endpoint AJAX para obtener mesas disponibles para una fecha
+    @GetMapping("/available-tables")
+    @ResponseBody
+    public List<RestaurantTable> getAvailableTables(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime date) {
+        return tableService.findAvailableTablesForDateTime(date);
+    }
+
     @PostMapping("/create")
     @Operation(summary = "Crear reserva", description = "Crea una nueva reserva en el sistema")
     public String createReservation(
@@ -95,7 +116,11 @@ public class ReservationController {
             RedirectAttributes attributes) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+            if (reservationDto.getDate() != null) {
+                model.addAttribute("availableTables", tableService.findAvailableTablesForDateTime(reservationDto.getDate()));
+            } else {
+                model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+            }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             boolean isAdmin = authentication.getAuthorities().stream()
@@ -114,7 +139,12 @@ public class ReservationController {
             return "redirect:/reservations";
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
-            model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+
+            if (reservationDto.getDate() != null) {
+                model.addAttribute("availableTables", tableService.findAvailableTablesForDateTime(reservationDto.getDate()));
+            } else {
+                model.addAttribute("availableTables", tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE));
+            }
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             boolean isAdmin = authentication.getAuthorities().stream()
@@ -159,9 +189,9 @@ public class ReservationController {
 
         model.addAttribute("reservationDto", reservationDto);
 
-        // Incluir la mesa actual y las disponibles
-        List<RestaurantTable> availableTables = tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
-        if (reservation.getTable().getStatus() != RestaurantTable.TableStatus.AVAILABLE) {
+        // Obtener mesas disponibles para la fecha de la reserva y añadir la mesa actual
+        List<RestaurantTable> availableTables = tableService.findAvailableTablesForDateTime(reservation.getDate());
+        if (!availableTables.stream().anyMatch(t -> t.getId().equals(reservation.getTable().getId()))) {
             availableTables.add(reservation.getTable());
         }
 
@@ -185,10 +215,17 @@ public class ReservationController {
             RedirectAttributes attributes) {
 
         if (bindingResult.hasErrors()) {
-            List<RestaurantTable> availableTables = tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
             Reservation reservation = reservationService.findById(id).orElseThrow();
 
-            if (reservation.getTable().getStatus() != RestaurantTable.TableStatus.AVAILABLE) {
+            // Obtener mesas disponibles para la fecha seleccionada y añadir la mesa actual
+            List<RestaurantTable> availableTables;
+            if (reservationDto.getDate() != null) {
+                availableTables = tableService.findAvailableTablesForDateTime(reservationDto.getDate());
+            } else {
+                availableTables = tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
+            }
+
+            if (!availableTables.stream().anyMatch(t -> t.getId().equals(reservation.getTable().getId()))) {
                 availableTables.add(reservation.getTable());
             }
 
@@ -214,10 +251,17 @@ public class ReservationController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
 
-            List<RestaurantTable> availableTables = tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
             Reservation reservation = reservationService.findById(id).orElseThrow();
 
-            if (reservation.getTable().getStatus() != RestaurantTable.TableStatus.AVAILABLE) {
+            // Obtener mesas disponibles para la fecha seleccionada y añadir la mesa actual
+            List<RestaurantTable> availableTables;
+            if (reservationDto.getDate() != null) {
+                availableTables = tableService.findAvailableTablesForDateTime(reservationDto.getDate());
+            } else {
+                availableTables = tableService.findByStatus(RestaurantTable.TableStatus.AVAILABLE);
+            }
+
+            if (!availableTables.stream().anyMatch(t -> t.getId().equals(reservation.getTable().getId()))) {
                 availableTables.add(reservation.getTable());
             }
 

@@ -16,7 +16,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @Tag(name = "Dashboard Controller", description = "Controlador para el panel principal del sistema")
@@ -71,7 +74,12 @@ public class DashboardController {
             model.addAttribute("recentActions", recentActions);
 
             // Añadir reservas recientes para el panel de gráfico
-            List<Reservation> recentReservations = reservationService.findRecentReservations(10);
+            // Ordenar las reservas: primero las futuras, luego las pasadas (en orden descendente)
+            List<Reservation> reservations = reservationService.findAll();
+            List<Reservation> sortedReservations = sortReservationsByDateFutureFirst(reservations);
+            List<Reservation> recentReservations = sortedReservations.size() > 10 ?
+                    sortedReservations.subList(0, 10) : sortedReservations;
+
             model.addAttribute("recentReservations", recentReservations);
         }
 
@@ -81,18 +89,51 @@ public class DashboardController {
             List<RestaurantTable> tables = restaurantTableService.findAll();
             model.addAttribute("tables", tables);
 
-            // Reservas del día
-            List<Reservation> todayReservations = reservationService.findReservationsForToday();
+            // Reservas del día - SOLO ACTIVAS y ordenadas por hora
+            LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+            LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
+
+            List<Reservation> todayReservations = reservationService.findByStatus(Reservation.ReservationStatus.ACTIVE)
+                    .stream()
+                    .filter(r -> r.getDate().isAfter(startOfDay) && r.getDate().isBefore(endOfDay))
+                    .sorted((r1, r2) -> r1.getDate().compareTo(r2.getDate())) // Ordenar por hora ascendente
+                    .collect(Collectors.toList());
+
             model.addAttribute("todayReservations", todayReservations);
         }
 
         // Si es USUARIO (o cualquier otro rol - todos deben ver sus reservas)
         if (isUser || isAdmin || isStaff) {
-            // Reservas del usuario
+            // Reservas del usuario - ordenadas primero futuras, luego pasadas
             List<Reservation> userReservations = reservationService.findByUser(currentUser);
+            userReservations = sortReservationsByDateFutureFirst(userReservations);
             model.addAttribute("userReservations", userReservations);
         }
 
         return "dashboard";
+    }
+
+    /**
+     * Ordena las reservas: primero las futuras (ascendente), luego las pasadas (descendente)
+     */
+    private List<Reservation> sortReservationsByDateFutureFirst(List<Reservation> reservations) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Dividir en futuras y pasadas
+        List<Reservation> futureReservations = reservations.stream()
+                .filter(r -> r.getDate().isAfter(now))
+                .sorted((r1, r2) -> r1.getDate().compareTo(r2.getDate())) // Ascendente para futuras
+                .collect(Collectors.toList());
+
+        List<Reservation> pastReservations = reservations.stream()
+                .filter(r -> r.getDate().isBefore(now) || r.getDate().isEqual(now))
+                .sorted((r1, r2) -> r2.getDate().compareTo(r1.getDate())) // Descendente para pasadas
+                .collect(Collectors.toList());
+
+        // Combinar las listas: primero futuras, luego pasadas
+        List<Reservation> sortedReservations = new ArrayList<>(futureReservations);
+        sortedReservations.addAll(pastReservations);
+
+        return sortedReservations;
     }
 }
