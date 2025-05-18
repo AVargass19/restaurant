@@ -40,7 +40,6 @@ public class RestaurantTableService {
      * @param dateTime La fecha y hora para la reserva
      * @return Lista de mesas disponibles
      */
-
     public List<RestaurantTable> findAvailableTablesForDateTime(LocalDateTime dateTime) {
         // Si la fecha es nula, devolvemos todas las mesas disponibles
         if (dateTime == null) {
@@ -51,7 +50,7 @@ public class RestaurantTableService {
         LocalDateTime startOfDay = dateTime.toLocalDate().atStartOfDay();
         LocalDateTime endOfDay = dateTime.toLocalDate().atTime(23, 59, 59);
 
-        // Obtener todas las mesas
+        // Obtener todas las mesas - CAMBIO: obtener todas, no solo las disponibles
         List<RestaurantTable> allTables = tableRepository.findAll();
 
         // Obtener IDs de mesas que ya tienen reservas en ese día
@@ -60,10 +59,10 @@ public class RestaurantTableService {
                 .map(reservation -> reservation.getTable().getId())
                 .collect(Collectors.toList());
 
-        // Filtrar mesas disponibles que no estén reservadas en ese día
+        // Filtrar mesas que no estén reservadas en ese día
+        // CAMBIO: No consideramos el estado de la mesa, solo si tiene reservas activas
         return allTables.stream()
-                .filter(table -> table.getStatus() == RestaurantTable.TableStatus.AVAILABLE
-                        && !reservedTableIds.contains(table.getId()))
+                .filter(table -> !reservedTableIds.contains(table.getId()))
                 .collect(Collectors.toList());
     }
 

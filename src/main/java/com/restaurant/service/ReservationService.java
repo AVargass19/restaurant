@@ -116,15 +116,15 @@ public class ReservationService {
             throw new RuntimeException("La mesa no está disponible");
         }
 
-        // Verificar si ya existe una reserva para esa mesa en ese horario
-        LocalDateTime startTime = reservationDto.getDate().minusHours(2);
-        LocalDateTime endTime = reservationDto.getDate().plusHours(2);
+        // Verificar si ya existe una reserva para esa mesa en ese día
+        LocalDateTime startOfDay = reservationDto.getDate().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = reservationDto.getDate().toLocalDate().atTime(23, 59, 59);
 
         List<Reservation> existingReservations = reservationRepository.findByTableAndDateBetweenAndStatus(
-                table.getId(), startTime, endTime, Reservation.ReservationStatus.ACTIVE);
+                table.getId(), startOfDay, endOfDay, Reservation.ReservationStatus.ACTIVE);
 
         if (!existingReservations.isEmpty()) {
-            throw new RuntimeException("Ya existe una reserva para esta mesa en este horario");
+            throw new RuntimeException("Ya existe una reserva para esta mesa en este día");
         }
 
         // Crear la reserva
