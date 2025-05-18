@@ -1,0 +1,84 @@
+/* Tables view styles */
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.table-card {
+    background-color: var(--crema-suave);
+    border: 2px solid var(--gris-claro);
+    border-radius: 4px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.table-card:hover {
+    transform: scale(1.05);
+}
+
+.table-card.available {
+    border-color: #4CAF50;
+}
+
+.table-card.occupied {
+    border-color: var(--burdeos-principal);
+    background-color: rgba(140, 28, 19, 0.1);
+}
+
+.table-card.reserved {
+    border-color: #FFC107;
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+/* Table navigation controls */
+.table-nav-controls {
+    margin-bottom: 20px;
+}
+
+.date-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.nav-btn {
+    background-color: var(--burdeos-principal);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nav-btn:hover {
+    background-color: var(--burdeos-claro);
+}
+
+.week-nav {
+    display: flex;
+    justify-content: center;
+}
+
+.week-btn {
+    background-color: var(--marron-calido);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.week-btn:hover {
+    background-color: var(--crema-suave);
+    color: var(--marron-calido);
+}

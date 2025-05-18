@@ -1,0 +1,137 @@
+/* Calendar styles */
+.calendar {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.calendar-header button {
+    background-color: var(--burdeos-principal);
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-header button:hover {
+    background-color: var(--burdeos-claro);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: bold;
+    padding: 8px;
+    color: var(--burdeos-principal);
+}
+
+.calendar-day {
+    position: relative;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background-color: white;
+    cursor: default;
+    border: 1px solid #e0e0e0;
+}
+
+.calendar-day.empty {
+    border: none;
+    background-color: transparent;
+}
+
+.calendar-day.today {
+    background-color: var(--warm-beige);
+    border-color: var(--burdeos-principal);
+    font-weight: bold;
+}
+
+.calendar-day.has-reservation {
+    font-weight: bold;
+    color: var(--burdeos-principal);
+}
+
+.calendar-day.past {
+    background-color: #f5f5f5;
+    color: #aaa;
+}
+
+.calendar-day.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.calendar-day.clickable:hover {
+    background-color: var(--warm-beige);
+    transform: scale(1.1);
+    z-index: 2;
+}
+
+.reservation-indicator {
+    width: 6px;
+    height: 6px;
+    background-color: var(--burdeos-principal);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Time selector styles */
+.time-slots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.time-slot {
+    background-color: var(--warm-beige);
+    border: 1px solid var(--marron-calido);
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-slot:hover {
+    background-color: var(--burdeos-claro);
+    color: var(--crema-suave);
+    transform: scale(1.05);
+}
+
+.no-slots {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--gris-claro);
+    padding: 10px;
+}
+
+.time-guide {
+    font-size: 0.9rem;
+    color: var(--gris-claro);
+    margin-bottom: 10px;
+}
