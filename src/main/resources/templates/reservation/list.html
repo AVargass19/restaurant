@@ -1,68 +1,202 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
 <head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/reservation/list.css}">
+
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-    <div class="panel">
+    <div class="reservation-list-panel">
         <div class="panel-header">
-            <h2 class="panel-title" th:text="#{reservation.list.title}">Lista de Reservas</h2>
-            <i class="fas fa-calendar-check panel-icon"></i>
+            <div class="header-content">
+                <i class="fas fa-calendar-check panel-icon"></i>
+                <h2 class="panel-title" th:text="#{reservation.list.title}">Lista de Reservas</h2>
+            </div>
+            <div class="header-actions" th:if="${isAdmin || isStaff}">
+                <a th:href="@{/reservations/create}" class="btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span th:text="#{reservation.create}">Nueva Reserva</span>
+                </a>
+            </div>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle alert-icon"></i>
             <span th:text="${successMessage}"></span>
         </div>
 
         <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle alert-icon"></i>
             <span th:text="${errorMessage}"></span>
         </div>
 
-        <div class="quick-links" th:if="${isAdmin || isStaff}">
-            <a th:href="@{/reservations/create}" class="quick-link" th:text="#{reservation.create}">Nueva Reserva</a>
+        <div class="reservation-filters">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="reservationSearch" placeholder="Buscar reserva..." class="search-input">
+            </div>
+            <div class="filter-container">
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">Todos los estados</option>
+                    <option value="ACTIVE">Activas</option>
+                    <option value="PENDING">Pendientes</option>
+                    <option value="COMPLETED">Completadas</option>
+                    <option value="CANCELLED">Canceladas</option>
+                </select>
+            </div>
         </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th th:text="#{reservation.id}">ID</th>
-                <th th:text="#{reservation.date}">Fecha</th>
-                <th th:text="#{reservation.time}">Hora</th>
-                <th th:text="#{reservation.table}">Mesa</th>
-                <th th:if="${isAdmin || isStaff}" th:text="#{reservation.customer}">Cliente</th>
-                <th th:text="#{reservation.guests}">Invitados</th>
-                <th th:text="#{reservation.status}">Estado</th>
-                <th th:text="#{reservation.actions}">Acciones</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="reservation : ${reservations}">
-                <td th:text="${reservation.id}">1</td>
-                <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
-                <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">19:30</td>
-                <td th:text="#{reservation.table} + ' ' + ${reservation.table.id}">Mesa 1</td>
-                <td th:if="${isAdmin || isStaff}" th:text="${reservation.user.name + ' ' + reservation.user.lastName}">Juan Pérez</td>
-                <td th:text="${reservation.guests}">4</td>
-                <td th:text="${reservation.status}">ACTIVE</td>
-                <td>
-                    <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.edit}">Editar</a>
-                    <a th:if="${isAdmin}" th:href="@{'/reservations/delete/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.delete}"
-                       th:onclick="'return confirm(\'' + #{reservation.delete.confirm} + '\');'">Eliminar</a>
-                    <a th:href="@{'/reservations/complete/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.complete}"
-                       th:if="${(isStaff || isAdmin) && reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Completar</a>
-                    <a th:href="@{'/reservations/cancel/' + ${reservation.id}}" class="quick-link" th:text="#{reservation.cancel}"
-                       th:onclick="'return confirm(\'' + #{reservation.cancel.confirm} + '\');'"
-                       th:if="${reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Cancelar</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="reservation-table">
+                <thead>
+                <tr>
+                    <th th:text="#{reservation.id}" class="id-column">ID</th>
+                    <th th:text="#{reservation.date}" class="date-column">Fecha</th>
+                    <th th:text="#{reservation.time}" class="time-column">Hora</th>
+                    <th th:text="#{reservation.table}" class="table-column">Mesa</th>
+                    <th th:if="${isAdmin || isStaff}" th:text="#{reservation.customer}" class="customer-column">Cliente</th>
+                    <th th:text="#{reservation.guests}" class="guests-column">Invitados</th>
+                    <th th:text="#{reservation.status}" class="status-column">Estado</th>
+                    <th th:text="#{reservation.actions}" class="actions-column">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reservation : ${reservations}" class="reservation-row" th:data-status="${reservation.status}">
+                    <td th:text="${reservation.id}" class="id-column">1</td>
+                    <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}" class="date-column">20/05/2025</td>
+                    <td th:text="${#temporals.format(reservation.date, 'HH:mm')}" class="time-column">19:30</td>
+                    <td th:text="#{reservation.table} + ' ' + ${reservation.table.id}" class="table-column">Mesa 1</td>
+                    <td th:if="${isAdmin || isStaff}" th:text="${reservation.user.name + ' ' + reservation.user.lastName}" class="customer-column">Juan Pérez</td>
+                    <td th:text="${reservation.guests}" class="guests-column">4</td>
+                    <td class="status-column">
+                        <span class="status-badge"
+                              th:classappend="${reservation.status.name() == 'ACTIVE' ? 'status-active' :
+                                              (reservation.status.name() == 'PENDING' ? 'status-pending' :
+                                              (reservation.status.name() == 'COMPLETED' ? 'status-completed' : 'status-cancelled'))}"
+                              th:text="${reservation.status}">ACTIVE</span>
+                    </td>
+                    <td class="actions-column">
+                        <div class="action-buttons">
+                            <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="action-btn edit" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a th:if="${isAdmin}"
+                               th:href="@{'/reservations/delete/' + ${reservation.id}}"
+                               class="action-btn delete"
+                               title="Eliminar"
+                               th:onclick="'return confirm(\'' + #{reservation.delete.confirm} + '\');'">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <a th:href="@{'/reservations/complete/' + ${reservation.id}}"
+                               class="action-btn complete"
+                               title="Completar"
+                               th:if="${(isStaff || isAdmin) && reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">
+                                <i class="fas fa-check"></i>
+                            </a>
+                            <a th:href="@{'/reservations/cancel/' + ${reservation.id}}"
+                               class="action-btn cancel"
+                               title="Cancelar"
+                               th:onclick="'return confirm(\'' + #{reservation.cancel.confirm} + '\');'"
+                               th:if="${reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <div th:if="${reservations.isEmpty()}" class="alert alert-info" th:text="#{reservation.no.data}">
-            No hay reservas disponibles
+        <div th:if="${reservations.isEmpty()}" class="no-data-message">
+            <i class="fas fa-calendar-times no-data-icon"></i>
+            <p th:text="#{reservation.no.data}">No hay reservas disponibles</p>
+        </div>
+
+        <div class="panel-footer">
+            <a th:href="@{/dashboard}" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver al Dashboard</span>
+            </a>
         </div>
     </div>
 </div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Búsqueda en tiempo real
+        const searchInput = document.getElementById('reservationSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const rows = document.querySelectorAll('.reservation-row');
+
+        // Función para filtrar las reservas
+        function filterReservations() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const statusValue = statusFilter.value;
+
+            rows.forEach(row => {
+                const rowData = row.textContent.toLowerCase();
+                const rowStatus = row.getAttribute('data-status');
+
+                // Comprobar si la fila coincide con el término de búsqueda
+                const matchesSearch = rowData.includes(searchTerm);
+
+                // Comprobar si la fila coincide con el filtro de estado
+                const matchesStatus = statusValue === 'all' || rowStatus === statusValue;
+
+                // Mostrar u ocultar la fila según los filtros
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Mostrar mensaje cuando no hay resultados
+            checkNoResults();
+        }
+
+        // Mostrar mensaje cuando no hay resultados visibles
+        function checkNoResults() {
+            let visibleRows = 0;
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    visibleRows++;
+                }
+            });
+
+            const noDataMessage = document.querySelector('.no-data-message');
+            if (noDataMessage) {
+                if (visibleRows === 0) {
+                    noDataMessage.style.display = 'flex';
+                    noDataMessage.querySelector('p').textContent = 'No se encontraron reservas con los filtros actuales';
+                } else {
+                    noDataMessage.style.display = 'none';
+                }
+            }
+        }
+
+        // Eventos para los filtros
+        searchInput.addEventListener('input', filterReservations);
+        statusFilter.addEventListener('change', filterReservations);
+
+        // Resaltar filas al pasar el mouse
+        rows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.classList.add('row-highlight');
+            });
+            row.addEventListener('mouseleave', function() {
+                this.classList.remove('row-highlight');
+            });
+        });
+
+        // Inicializar
+        checkNoResults();
+    });
+</script>
 </body>
 </html>
