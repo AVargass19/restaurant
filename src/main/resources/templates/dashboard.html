@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="#{dashboard.title}">Ambrosía - Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Estilos base -->
   <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <!-- Estilos específicos del dashboard -->
+  <link rel="stylesheet" th:href="@{/css/dashboard/main.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard/calendar.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard/modal.css}">
+  <link rel="stylesheet" th:href="@{/css/dashboard/tables.css}">
 </head>
 <body>
 <!-- Navbar -->
@@ -54,7 +60,7 @@
           <div class="stat-label" th:text="#{admin.active.reservations}">Active Reservations</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number" th:text="${todayReservations}">8</div>
+          <div class="stat-number" th:text="${todayReservations instanceof T(java.lang.Integer) ? todayReservations : todayReservations.size()}">8</div>
           <div class="stat-label" th:text="#{admin.today.reservations}">Today's Reservations</div>
         </div>
       </div>
@@ -194,7 +200,7 @@
       <div class="table-grid">
         <div th:each="table : ${tables}"
              th:class="${table.status == T(com.restaurant.model.RestaurantTable.TableStatus).AVAILABLE ? 'table-card available' :
-                               (table.status == T(com.restaurant.model.RestaurantTable.TableStatus).OCCUPIED ? 'table-card occupied' : 'table-card reserved')}">
+                     (table.status == T(com.restaurant.model.RestaurantTable.TableStatus).OCCUPIED ? 'table-card occupied' : 'table-card reserved')}">
           <div th:text="#{staff.table} + ' ' + ${table.id}">Table 1</div>
           <div th:text="#{staff.status} + ': ' + ${table.status}">Status: Available</div>
         </div>
@@ -215,7 +221,6 @@
           <th th:text="#{staff.reservation.customer}">Customer</th>
           <th th:text="#{staff.reservation.guests}">Guests</th>
           <th th:text="#{staff.reservation.status}">Status</th>
-          <th th:text="#{staff.reservation.actions}">Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -225,13 +230,16 @@
           <td th:text="${reservation.user.name + ' ' + reservation.user.lastName}">María García</td>
           <td th:text="${reservation.guests}">4</td>
           <td th:text="${reservation.status}">ACTIVE</td>
-          <td>
-            <a th:href="@{'/reservations/complete/' + ${reservation.id}}" class="quick-link" th:text="#{staff.mark.completed}"
-               th:if="${reservation.status == T(com.restaurant.model.Reservation.ReservationStatus).ACTIVE}">Mark as Completed</a>
-          </td>
+        </tr>
+        <tr th:if="${todayReservations.isEmpty()}">
+          <td colspan="5" class="text-center">No hay reservas activas para hoy</td>
         </tr>
         </tbody>
       </table>
+
+      <div class="quick-links" style="margin-top: 1rem;">
+        <a th:href="@{/reservations}" class="quick-link" th:text="#{staff.manage.reservations}">Manage Reservations</a>
+      </div>
     </div>
 
     <!-- Table Actions Panel -->
@@ -274,12 +282,15 @@
           <td>
             <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{user.modify}"
                th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}">Modify</a>
-            <!-- Modificado: Ahora usamos JavaScript para mostrar el modal personalizado -->
+            <!-- Botón que abre el modal de cancelación -->
             <a href="javascript:void(0)" class="quick-link cancel-reservation" th:text="#{user.cancel}"
                th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}"
                th:data-reservation-id="${reservation.id}"
                th:data-reservation-date="${#temporals.format(reservation.date, 'dd/MM/yyyy HH:mm')}">Cancel</a>
           </td>
+        </tr>
+        <tr th:if="${userReservations.isEmpty()}">
+          <td colspan="5" class="text-center">No tienes reservas activas</td>
         </tr>
         </tbody>
       </table>
@@ -338,120 +349,31 @@
   </div>
 </div>
 
-<!-- JavaScript for Charts and Functionality -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script>
-  // Función para cambiar el idioma
-  function changeLanguage() {
-    const language = document.getElementById('languageSelect').value;
-    window.location.href = '?lang=' + language;
-  }
+<!-- Script para inicializar los datos de reserva para el calendario -->
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  // Inicializar array de reservas del usuario para el calendario
+  window.userReservations = [];
 
-  // Modal de confirmación de cancelación
-  document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('cancelReservationModal');
-    const confirmBtn = document.getElementById('confirmCancelBtn');
-    const cancelBtn = document.getElementById('cancelModalBtn');
-    const reservationDetails = document.getElementById('reservationDetails');
-
-    // Funcionalidad para los botones de cancelar reserva
-    document.querySelectorAll('.cancel-reservation').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const reservationId = this.getAttribute('data-reservation-id');
-        const reservationDate = this.getAttribute('data-reservation-date');
-
-        // Actualizar el enlace de confirmación con el ID de la reserva
-        confirmBtn.href = `/reservations/cancel/${reservationId}`;
-
-        // Mostrar detalles de la reserva
-        reservationDetails.innerHTML = `<strong>Fecha:</strong> ${reservationDate}`;
-
-        // Mostrar el modal
-        modal.classList.add('active');
-      });
-    });
-
-    // Cerrar el modal al hacer clic en "Cancelar"
-    cancelBtn.addEventListener('click', function() {
-      modal.classList.remove('active');
-    });
-
-    // Cerrar el modal al hacer clic fuera de él
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-      }
-    });
+  /*[# th:each="reservation : ${userReservations}"]*/
+  window.userReservations.push({
+    id: /*[[${reservation.id}]]*/ 0,
+    date: /*[[${reservation.date}]]*/ '2025-05-17T19:30:00',
+    tableId: /*[[${reservation.table.id}]]*/ 1,
+    guests: /*[[${reservation.guests}]]*/ 2,
+    status: /*[[${reservation.status}]]*/ 'ACTIVE'
   });
-
-  // Renderizar el gráfico de reservas para el panel de administrador
-  if (document.getElementById('reservationChart')) {
-    const ctx = document.getElementById('reservationChart').getContext('2d');
-    const reservationChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-        datasets: [{
-          label: 'Reservas',
-          data: [5, 7, 10, 12, 18, 25, 20],
-          backgroundColor: '#8C1C13',
-          borderColor: '#8C1C13',
-          tension: 0.2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    });
-  }
-
-  // Función para generar el calendario
-  function generateCalendar(year, month) {
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const totalDays = lastDay.getDate();
-    const startDay = firstDay.getDay();
-
-    const calendarGrid = document.querySelector('.calendar-grid');
-
-    // Conservar los encabezados de los días
-    const headers = Array.from(calendarGrid.querySelectorAll('.calendar-day-header'));
-
-    // Limpiamos el calendario excepto los encabezados de los días
-    calendarGrid.innerHTML = '';
-
-    // Restaurar los encabezados
-    headers.forEach(header => {
-      calendarGrid.appendChild(header);
-    });
-
-    // Agregamos espacios en blanco para el principio del mes
-    for (let i = 0; i < (startDay === 0 ? 6 : startDay - 1); i++) {
-      const emptyDay = document.createElement('div');
-      emptyDay.className = 'calendar-day empty';
-      calendarGrid.appendChild(emptyDay);
-    }
-
-    // Agregamos los días del mes
-    const today = new Date();
-    for (let i = 1; i <= totalDays; i++) {
-      const dayElement = document.createElement('div');
-      const isToday = today.getDate() === i && today.getMonth() === month && today.getFullYear() === year;
-
-      dayElement.className = isToday ? 'calendar-day today' : 'calendar-day';
-      dayElement.textContent = i;
-
-      // TODO: Marcar días con reservas
-
-      calendarGrid.appendChild(dayElement);
-    }
-  }
-
-  // Iniciamos el calendario con el mes actual
-  const currentDate = new Date();
-  generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+  /*[/]*/
+  /*]]>*/
 </script>
+
+<!-- Scripts generales -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<!-- Scripts específicos -->
+<script th:src="@{/js/dashboard/main.js}"></script>
+<script th:src="@{/js/dashboard/calendar.js}"></script>
+<script th:src="@{/js/dashboard/modal.js}"></script>
+<script th:src="@{/js/dashboard/tables.js}"></script>
 </body>
 </html>
