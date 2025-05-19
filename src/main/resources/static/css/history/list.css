@@ -1,0 +1,328 @@
+/* Estilos mejorados para el historial de reservas */
+.history-panel {
+    margin-top: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Filtros rápidos */
+.quick-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.quick-link {
+    padding: 8px 15px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: 1px solid #dee2e6;
+}
+
+.quick-link:hover {
+    background-color: #e9ecef;
+    color: #212529;
+    text-decoration: none;
+}
+
+.quick-link.active {
+    background-color: var(--burdeos-principal, #8B0000);
+    color: white;
+    border-color: var(--burdeos-principal, #8B0000);
+}
+
+/* Contenedor de búsqueda */
+.search-container {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-input-container {
+    position: relative;
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.search-input {
+    width: 100%;
+    padding: 8px 35px 8px 30px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--burdeos-principal, #8B0000);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.25);
+}
+
+.clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    display: none;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.clear-search:hover {
+    color: #343a40;
+}
+
+/* Botones */
+.btn {
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--burdeos-principal, #8B0000);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #6d0000;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos para la paginación */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.pagination-container.bottom {
+    margin-top: 30px;
+    border-top: 1px solid #e9ecef;
+}
+
+.pagination-info {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+}
+
+.pagination a, .pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.pagination-ellipsis {
+    background: none;
+    color: #6c757d;
+}
+
+.pagination a:hover:not(.disabled):not(.active) {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+.pagination a.active {
+    background-color: var(--burdeos-principal, #8B0000);
+    color: white;
+}
+
+.pagination a.disabled {
+    color: #adb5bd;
+    pointer-events: none;
+    cursor: default;
+}
+
+/* Selector de registros por página */
+.page-size-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-size-selector select {
+    padding: 6px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+/* Tabla de historial */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: white;
+}
+
+.history-table th,
+.history-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.history-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+
+.history-table tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Botón de detalles */
+.btn-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-details:hover {
+    background-color: #dee2e6;
+    color: #212529;
+}
+
+/* Badges para estados */
+.badge {
+    display: inline-block;
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.badge.success {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge.warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge.danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Alerta cuando no hay registros */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Botón para volver */
+.back-button {
+    margin-top: 20px;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/* Ajustes para pantallas ultrapequeñas */
+@media (max-width: 360px) {
+    .history-meta-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .pagination a, .pagination-ellipsis {
+        min-width: 28px;
+        height: 28px;
+        padding: 0 5px;
+        font-size: 0.9rem;
+    }
+
+    .search-input-container {
+        min-width: 200px;
+    }
+}
