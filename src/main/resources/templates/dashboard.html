@@ -66,71 +66,6 @@
       </div>
     </div>
 
-    <!-- Reservations Chart Panel -->
-    <div class="panel">
-      <div class="panel-header">
-        <h2 class="panel-title" th:text="#{admin.recent.reservations}">Recent Reservations</h2>
-        <i class="fas fa-calendar-alt panel-icon"></i>
-      </div>
-
-      <!-- Si quieres mantener el gráfico para otra visualización, puedes dejarlo como está y añadir la tabla debajo -->
-      <div class="chart-container" id="reservationChart" style="height: 200px; margin-bottom: 15px;">
-        <!-- Chart will be rendered here via JavaScript -->
-      </div>
-
-      <!-- Tabla de reservas recientes -->
-      <table>
-        <thead>
-        <tr>
-          <th th:text="#{admin.reservation.date}">Date</th>
-          <th th:text="#{admin.reservation.time}">Time</th>
-          <th th:text="#{admin.reservation.customer}">Customer</th>
-          <th th:text="#{admin.reservation.table}">Table</th>
-          <th th:text="#{admin.reservation.guests}">Guests</th>
-          <th th:text="#{admin.reservation.status}">Status</th>
-          <th th:text="#{admin.reservation.actions}">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:if="${recentReservations == null || recentReservations.isEmpty()}">
-          <td colspan="7" class="text-center" th:text="#{admin.no.recent.reservations}">No recent reservations</td>
-        </tr>
-        <tr th:each="reservation : ${recentReservations}" th:unless="${recentReservations == null || recentReservations.isEmpty()}">
-          <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
-          <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
-          <td th:text="${reservation.user.name + ' ' + reservation.user.lastName}">John Doe</td>
-          <td th:text="#{admin.table} + ' ' + ${reservation.table.id}">Table 1</td>
-          <td th:text="${reservation.guests}">4</td>
-          <td>
-          <span class="badge"
-                th:classappend="${reservation.status.name() == 'ACTIVE' ? 'success' : (reservation.status.name() == 'PENDING' ? 'warning' : (reservation.status.name() == 'COMPLETED' ? 'info' : 'danger'))}"
-                th:text="${reservation.status}">ACTIVE</span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="action-btn edit" title="Editar">
-                <i class="fas fa-edit"></i>
-              </a>
-              <a th:if="${reservation.status.name() == 'ACTIVE'}"
-                 th:href="@{/reservations/complete/{id}(id=${reservation.id})}"
-                 class="action-btn complete"
-                 title="Completar">
-                <i class="fas fa-check"></i>
-              </a>
-              <a th:if="${reservation.status.name() == 'ACTIVE'}"
-                 th:href="@{/reservations/cancel/{id}(id=${reservation.id})}"
-                 class="action-btn cancel"
-                 title="Cancelar"
-                 onclick="return confirm('¿Estás seguro de que deseas cancelar esta reserva?')">
-                <i class="fas fa-times"></i>
-              </a>
-            </div>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
     <!-- Quick Access Panel -->
     <div class="panel">
       <div class="panel-header">
@@ -145,44 +80,122 @@
       </div>
     </div>
 
+    <!-- Reservations Chart Panel -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title" th:text="#{admin.recent.reservations}">Recent Reservations</h2>
+        <i class="fas fa-calendar-alt panel-icon"></i>
+      </div>
+
+      <!-- Tabla de reservas recientes - Ahora al inicio -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+          <tr>
+            <th th:text="#{admin.reservation.date}">Date</th>
+            <th th:text="#{admin.reservation.time}">Time</th>
+            <th th:text="#{admin.reservation.customer}">Customer</th>
+            <th th:text="#{admin.reservation.table}">Table</th>
+            <th th:text="#{admin.reservation.guests}">Guests</th>
+            <th th:text="#{admin.reservation.status}">Status</th>
+            <th th:text="#{admin.reservation.actions}">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:if="${recentReservations == null || recentReservations.isEmpty()}">
+            <td colspan="7" class="text-center" th:text="#{admin.no.recent.reservations}">No recent reservations</td>
+          </tr>
+          <tr th:each="reservation : ${recentReservations}" th:unless="${recentReservations == null || recentReservations.isEmpty()}">
+            <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
+            <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
+            <td th:text="${reservation.user.name + ' ' + reservation.user.lastName}">John Doe</td>
+            <td th:text="#{admin.table} + ' ' + ${reservation.table.id}">Table 1</td>
+            <td th:text="${reservation.guests}">4</td>
+            <td>
+            <span class="badge"
+                  th:classappend="${reservation.status.name() == 'ACTIVE' ? 'success' : (reservation.status.name() == 'PENDING' ? 'warning' : (reservation.status.name() == 'COMPLETED' ? 'info' : 'danger'))}"
+                  th:text="${reservation.status}">ACTIVE</span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a th:href="@{/reservations/edit/{id}(id=${reservation.id})}" class="action-btn edit" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a th:if="${reservation.status.name() == 'ACTIVE'}"
+                   th:href="@{/reservations/complete/{id}(id=${reservation.id})}"
+                   class="action-btn complete"
+                   title="Completar">
+                  <i class="fas fa-check"></i>
+                </a>
+                <a th:if="${reservation.status.name() == 'ACTIVE'}"
+                   th:href="@{/reservations/cancel/{id}(id=${reservation.id})}"
+                   class="action-btn cancel"
+                   title="Cancelar"
+                   onclick="return confirm('¿Estás seguro de que deseas cancelar esta reserva?')">
+                  <i class="fas fa-times"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Recent System Actions Panel -->
     <div class="panel">
       <div class="panel-header">
         <h2 class="panel-title" th:text="#{admin.recent.actions}">Recent System Actions</h2>
         <i class="fas fa-history panel-icon"></i>
       </div>
-      <table>
-        <thead>
-        <tr>
-          <th th:text="#{admin.action.date}">Date</th>
-          <th th:text="#{admin.action.user}">User</th>
-          <th th:text="#{admin.action.type}">Action Type</th>
-          <th th:text="#{admin.action.reservation}">Reservation</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="action : ${recentActions}">
-          <td th:text="${#temporals.format(action.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
-          <td th:text="${action.user.name + ' ' + action.user.lastName}">John Doe</td>
-          <td>
-        <span class="badge"
-              th:classappend="${action.action.name() == 'CREATE' ? 'success' : (action.action.name() == 'UPDATE' ? 'warning' : 'danger')}"
-              th:text="${action.action}">CREATE</span>
-          </td>
-          <td>
-            <a th:if="${action.reservation != null}"
-               th:href="@{/reservations/edit/{id}(id=${action.reservation.id})}"
-               th:text="'#' + ${action.reservation.id} + ' - ' + ${#temporals.format(action.reservation.date, 'dd/MM/yyyy HH:mm')}">
-              #1 - 01/06/2025 20:00
-            </a>
-            <span th:unless="${action.reservation != null}" th:text="#{admin.reservation.deleted}">Deleted reservation</span>
-          </td>
-        </tr>
-        <tr th:if="${recentActions.isEmpty()}">
-          <td colspan="4" class="text-center" th:text="#{admin.no.recent.actions}">No recent actions</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+          <tr>
+            <th th:text="#{admin.action.date}">Date</th>
+            <th th:text="#{admin.action.user}">User</th>
+            <th th:text="#{admin.action.type}">Action Type</th>
+            <th th:text="#{admin.action.reservation}">Reservation</th>
+            <th th:text="#{admin.action.details}">Details</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="action : ${recentActions}">
+            <td th:text="${#temporals.format(action.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
+            <td th:text="${action.user.name + ' ' + action.user.lastName}">John Doe</td>
+            <td>
+          <span class="badge"
+                th:classappend="${action.action.name() == 'CREATE' ? 'success' : (action.action.name() == 'UPDATE' ? 'warning' : 'danger')}"
+                th:text="${action.action}">CREATE</span>
+            </td>
+            <td>
+              <a th:if="${action.reservation != null}"
+                 th:href="@{/reservations/edit/{id}(id=${action.reservation.id})}"
+                 th:text="'#' + ${action.reservation.id} + ' - ' + ${#temporals.format(action.reservation.date, 'dd/MM/yyyy HH:mm')}">
+                #1 - 01/06/2025 20:00
+              </a>
+              <span th:unless="${action.reservation != null}" th:text="#{admin.reservation.deleted}">Deleted reservation</span>
+            </td>
+            <td>
+              <a href="javascript:void(0)"
+                 class="btn-details"
+                 th:data-old-values="${action.oldValues}"
+                 th:data-new-values="${action.newValues}"
+                 th:data-action="${action.action.name()}"
+                 th:data-history-id="${action.id}"
+                 th:data-timestamp="${action.createdAt}"
+                 th:data-username="${action.user.name + ' ' + action.user.lastName}"
+                 onclick="showChangeDetailsModal(this)">
+                <i class="fas fa-info-circle"></i> Ver detalles
+              </a>
+            </td>
+          </tr>
+          <tr th:if="${recentActions.isEmpty()}">
+            <td colspan="5" class="text-center" th:text="#{admin.no.recent.actions}">No recent actions</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="panel-footer">
         <a th:href="@{/history}" class="view-all-link" th:text="#{admin.view.all.actions}">View all actions</a>
       </div>
@@ -263,37 +276,39 @@
         <h2 class="panel-title" th:text="#{user.current.reservations}">Your Reservations</h2>
         <i class="fas fa-calendar-check panel-icon"></i>
       </div>
-      <table>
-        <thead>
-        <tr>
-          <th th:text="#{user.reservation.date}">Date</th>
-          <th th:text="#{user.reservation.time}">Time</th>
-          <th th:text="#{user.reservation.guests}">Guests</th>
-          <th th:text="#{user.reservation.status}">Status</th>
-          <th th:text="#{user.reservation.actions}">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="reservation : ${userReservations}">
-          <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
-          <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
-          <td th:text="${reservation.guests}">2</td>
-          <td th:text="${reservation.status}">ACTIVE</td>
-          <td>
-            <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{user.modify}"
-               th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}">Modify</a>
-            <!-- Botón que abre el modal de cancelación -->
-            <a href="javascript:void(0)" class="quick-link cancel-reservation" th:text="#{user.cancel}"
-               th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}"
-               th:data-reservation-id="${reservation.id}"
-               th:data-reservation-date="${#temporals.format(reservation.date, 'dd/MM/yyyy HH:mm')}">Cancel</a>
-          </td>
-        </tr>
-        <tr th:if="${userReservations.isEmpty()}">
-          <td colspan="5" class="text-center">No tienes reservas activas</td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+          <tr>
+            <th th:text="#{user.reservation.date}">Date</th>
+            <th th:text="#{user.reservation.time}">Time</th>
+            <th th:text="#{user.reservation.guests}">Guests</th>
+            <th th:text="#{user.reservation.status}">Status</th>
+            <th th:text="#{user.reservation.actions}">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="reservation : ${userReservations}">
+            <td th:text="${#temporals.format(reservation.date, 'dd/MM/yyyy')}">20/05/2025</td>
+            <td th:text="${#temporals.format(reservation.date, 'HH:mm')}">20:30</td>
+            <td th:text="${reservation.guests}">2</td>
+            <td th:text="${reservation.status}">ACTIVE</td>
+            <td>
+              <a th:href="@{'/reservations/edit/' + ${reservation.id}}" class="quick-link" th:text="#{user.modify}"
+                 th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}">Modify</a>
+              <!-- Botón que abre el modal de cancelación -->
+              <a href="javascript:void(0)" class="quick-link cancel-reservation" th:text="#{user.cancel}"
+                 th:if="${reservation.date.isAfter(T(java.time.LocalDateTime).now().plusHours(2))}"
+                 th:data-reservation-id="${reservation.id}"
+                 th:data-reservation-date="${#temporals.format(reservation.date, 'dd/MM/yyyy HH:mm')}">Cancel</a>
+            </td>
+          </tr>
+          <tr th:if="${userReservations.isEmpty()}">
+            <td colspan="5" class="text-center">No tienes reservas activas</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="quick-links" style="margin-top: 1.5rem;">
         <a th:href="@{/reservations/create}" class="quick-link" th:text="#{user.new.reservation}">New Reservation</a>
       </div>
@@ -349,6 +364,27 @@
   </div>
 </div>
 
+<!-- Modal para mostrar detalles de cambios en reservas -->
+<div id="changeDetailsModal" class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div>
+        <i class="fas fa-info-circle modal-icon"></i>
+        <span class="modal-title">Detalles del Cambio</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeChangeDetailsModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-content">
+      <!-- El contenido se genera dinámicamente mediante JavaScript -->
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeChangeDetailsModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Script para inicializar los datos de reserva para el calendario -->
 <script th:inline="javascript">
   /*<![CDATA[*/
@@ -375,5 +411,6 @@
 <script th:src="@{/js/dashboard/calendar.js}"></script>
 <script th:src="@{/js/dashboard/modal.js}"></script>
 <script th:src="@{/js/dashboard/tables.js}"></script>
+
 </body>
 </html>

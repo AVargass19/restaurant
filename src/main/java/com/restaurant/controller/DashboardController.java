@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,11 +67,15 @@ public class DashboardController {
             model.addAttribute("todayReservations", reservationService.countTodayReservations());
 
             // Acciones recientes del sistema
-            List<ReservationHistory> recentActions = historyService.findAll();
-            // Limitamos a los 10 más recientes
-            if (recentActions.size() > 10) {
-                recentActions = recentActions.subList(0, 10);
-            }
+            List<ReservationHistory> allActions = historyService.findAll();
+
+            // Ordenar todas las acciones por fecha de creación en orden descendente
+            allActions.sort(Comparator.comparing(ReservationHistory::getCreatedAt).reversed());
+
+            // Tomar las 10 más recientes
+            List<ReservationHistory> recentActions = allActions.isEmpty() ? allActions :
+                    (allActions.size() > 10 ? allActions.subList(0, 10) : allActions);
+
             model.addAttribute("recentActions", recentActions);
 
             // Añadir reservas recientes para el panel de gráfico
