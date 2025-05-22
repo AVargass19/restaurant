@@ -322,6 +322,141 @@
     justify-content: center;
 }
 
+/* Estilos para el modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-header i {
+    color: #dc2626;
+    font-size: 24px;
+}
+
+.modal-title {
+    margin: 0;
+    color: #111827;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 20px 24px;
+    color: #4b5563;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.table-info {
+    background-color: #f3f4f6;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+    border-left: 4px solid #dc2626;
+}
+
+.table-info strong {
+    color: #111827;
+}
+
+.modal-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-btn-cancel {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.modal-btn-cancel:hover {
+    background-color: #e5e7eb;
+}
+
+.modal-btn-confirm {
+    background-color: #dc2626;
+    color: white;
+}
+
+.modal-btn-confirm:hover {
+    background-color: #b91c1c;
+}
+
+.close {
+    color: #9ca3af;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close:hover {
+    color: #4b5563;
+    background-color: #f3f4f6;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .table-list-panel {

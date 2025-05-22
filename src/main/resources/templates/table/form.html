@@ -12,7 +12,10 @@
         <div class="panel-header">
             <div class="header-content">
                 <i class="fas fa-edit panel-icon"></i>
-                <h2 class="panel-title" th:text="${table.id == null ? #{table.create.title} : #{table.edit.title}}">Nueva Mesa</h2>
+                <h2 class="panel-title">
+                    <span th:if="${table.id == null}" th:text="#{table.create.title}">Nueva Mesa</span>
+                    <span th:unless="${table.id == null}" th:text="#{table.edit.title}">Editar Mesa</span>
+                </h2>
             </div>
             <div class="table-icon-container">
                 <i class="fas fa-utensils reservation-icon"></i>
@@ -47,7 +50,9 @@
             <div class="form-actions">
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-save"></i>
-                    <span th:text="${table.id == null ? #{table.create.button} : #{table.edit.button}}">Guardar</span>
+                    <!-- Fixed: Use separate conditions instead of ternary with i18n -->
+                    <span th:if="${table.id == null}" th:text="#{table.create.button}">Crear</span>
+                    <span th:unless="${table.id == null}" th:text="#{table.edit.button}">Guardar</span>
                 </button>
                 <a th:href="@{/tables}" class="btn-secondary">
                     <i class="fas fa-times"></i>
