@@ -1,65 +1,147 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head('Mi Perfil')}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/user/profile.css}">
+
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-    <div class="panel">
+    <div class="profile-panel">
         <div class="panel-header">
-            <h2 class="panel-title" th:text="#{user.profile.title}">Mi Perfil</h2>
-            <i class="fas fa-user-circle panel-icon"></i>
+            <div class="header-content">
+                <i class="fas fa-user-circle panel-icon"></i>
+                <h2 class="panel-title">Mi Perfil</h2>
+            </div>
+            <div class="profile-icon-container">
+                <i class="fas fa-id-card"></i>
+            </div>
         </div>
 
+        <!-- Mensajes de éxito y error -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle alert-icon"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle alert-icon"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Información del usuario (Solo lectura) -->
         <div class="profile-info">
-            <div class="profile-section">
-                <h3 th:text="#{user.personal.info}">Información Personal</h3>
-                <p><strong th:text="#{user.name} + ':'">Nombre:</strong> <span th:text="${user.name}">Juan</span></p>
-                <p><strong th:text="#{user.lastName} + ':'">Apellidos:</strong> <span th:text="${user.lastName}">Pérez</span></p>
-                <p><strong th:text="#{user.username} + ':'">Usuario:</strong> <span th:text="${user.username}">jperez</span></p>
-                <p><strong th:text="#{user.phone} + ':'">Teléfono:</strong> <span th:text="${user.phone}">123456789</span></p>
-                <p><strong th:text="#{user.role} + ':'">Rol:</strong> <span th:text="${user.roles[0].name}">ROLE_USER</span></p>
+            <h3 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                Información Personal
+            </h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Nombre:</label>
+                    <span th:text="${user.name}">Juan</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Apellido:</label>
+                    <span th:text="${user.lastName}">Pérez</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Nombre de Usuario:</label>
+                    <span th:text="${user.username}">jperez</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Teléfono:</label>
+                    <span th:text="${user.phone ?: 'No especificado'}">123456789</span>
+                </div>
+
+                <div class="info-item">
+                    <label>Rol:</label>
+                    <span th:if="${user.roles != null and !user.roles.isEmpty()}"
+                          th:text="${user.roles.iterator().next().name == 'ROLE_ADMIN' ? 'Administrador' :
+                                   (user.roles.iterator().next().name == 'ROLE_STAFF' ? 'Personal' : 'Usuario')}">
+                        Usuario
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <label>Estado:</label>
+                    <span class="status-badge" th:classappend="${user.enabled ? 'active' : 'inactive'}">
+                        <i class="fas" th:classappend="${user.enabled ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                        <span th:text="${user.enabled ? 'Activo' : 'Inactivo'}">Activo</span>
+                    </span>
+                </div>
             </div>
+        </div>
 
-            <div class="profile-section">
-                <h3 th:text="#{user.update.profile}">Actualizar Perfil</h3>
-                <form th:action="@{/user/profile/update}" method="post" th:object="${userDto}">
-                    <input type="hidden" th:field="*{id}" />
+        <!-- Formulario para cambiar contraseña -->
+        <div class="password-change-section">
+            <h3 class="section-title">
+                <i class="fas fa-lock"></i>
+                Cambiar Contraseña
+            </h3>
 
-                    <!-- Teléfono -->
-                    <div class="form-group">
-                        <label for="phone" th:text="#{user.phone}">Teléfono</label>
-                        <input type="text" id="phone" th:field="*{phone}" class="form-control" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            <form th:action="@{/users/profile/change-password}" method="post" class="password-form">
+                <div class="form-group">
+                    <label for="currentPassword">Contraseña Actual</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-key input-icon"></i>
+                        <input type="password" id="currentPassword" name="currentPassword"
+                               class="form-control" placeholder="Ingrese su contraseña actual" required />
                     </div>
+                </div>
 
-                    <!-- Contraseña actual -->
-                    <div class="form-group">
-                        <label for="currentPassword" th:text="#{user.current.password}">Contraseña Actual</label>
-                        <input type="password" id="currentPassword" name="currentPassword" class="form-control" />
+                <div class="form-group">
+                    <label for="newPassword">Nueva Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="newPassword" name="newPassword"
+                               class="form-control" placeholder="Ingrese la nueva contraseña" required />
                     </div>
+                    <div class="password-requirements">
+                        La contraseña debe tener al menos 6 caracteres
+                    </div>
+                </div>
 
-                    <!-- Nueva Contraseña -->
-                    <div class="form-group">
-                        <label for="password" th:text="#{user.new.password}">Nueva Contraseña</label>
-                        <input type="password" id="password" th:field="*{password}" class="form-control" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirmar Nueva Contraseña</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword"
+                               class="form-control" placeholder="Confirme la nueva contraseña" required />
                     </div>
+                    <div id="passwordMessage" class="password-feedback"></div>
+                </div>
 
-                    <!-- Confirmar Nueva Contraseña -->
-                    <div class="form-group">
-                        <label for="confirmPassword" th:text="#{user.confirm.password}">Confirmar Nueva Contraseña</label>
-                        <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="changePasswordBtn">
+                        <i class="fas fa-save"></i>
+                        <span>Cambiar Contraseña</span>
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="clearPasswordForm()">
+                        <i class="fas fa-undo"></i>
+                        <span>Limpiar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
 
-                    <div class="form-group">
-                        <button type="submit" class="quick-link" th:text="#{user.update.button}">Actualizar</button>
-                    </div>
-                </form>
-            </div>
+        <!-- Botón para volver -->
+        <div class="profile-footer">
+            <a th:href="@{/dashboard}" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                <span>Volver al Dashboard</span>
+            </a>
         </div>
     </div>
 </div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/js/ruser/profile.js}"></script>
+
 </body>
 </html>
