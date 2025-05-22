@@ -1,59 +1,163 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head('Usuarios')}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/user/list.css}">
+
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-  <div class="panel">
+  <div class="user-list-panel">
     <div class="panel-header">
-      <h2 class="panel-title" th:text="#{user.list.title}">Usuarios</h2>
-      <i class="fas fa-users panel-icon"></i>
+      <div class="header-content">
+        <i class="fas fa-users panel-icon"></i>
+        <h2 class="panel-title" th:text="#{user.list.title}">Gestión de Usuarios</h2>
+      </div>
+      <div class="header-actions">
+        <a th:href="@{/users/create}" class="btn-primary">
+          <i class="fas fa-plus"></i>
+          <span th:text="#{user.create.button}">Nuevo Usuario</span>
+        </a>
+      </div>
     </div>
 
     <div th:if="${successMessage}" class="alert alert-success">
+      <i class="fas fa-check-circle alert-icon"></i>
       <span th:text="${successMessage}"></span>
     </div>
 
-    <div class="quick-links">
-      <a th:href="@{/users/create}" class="quick-link" th:text="#{user.create}">Nuevo Usuario</a>
+    <div th:if="${errorMessage}" class="alert alert-danger">
+      <i class="fas fa-exclamation-circle alert-icon"></i>
+      <span th:text="${errorMessage}"></span>
     </div>
 
-    <table>
-      <thead>
-      <tr>
-        <th th:text="#{user.id}">ID</th>
-        <th th:text="#{user.name}">Nombre</th>
-        <th th:text="#{user.lastName}">Apellidos</th>
-        <th th:text="#{user.username}">Usuario</th>
-        <th th:text="#{user.phone}">Teléfono</th>
-        <th th:text="#{user.role}">Rol</th>
-        <th th:text="#{user.status}">Estado</th>
-        <th th:text="#{user.actions}">Acciones</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:each="user : ${users}">
-        <td th:text="${user.id}">1</td>
-        <td th:text="${user.name}">Juan</td>
-        <td th:text="${user.lastName}">Pérez</td>
-        <td th:text="${user.username}">jperez</td>
-        <td th:text="${user.phone}">123456789</td>
-        <td th:text="${user.roles[0].name}">ROLE_USER</td>
-        <td th:text="${user.enabled ? #{user.active} : #{user.inactive}}">Activo</td>
-        <td>
-          <a th:href="@{'/users/edit/' + ${user.id}}" class="quick-link" th:text="#{user.edit}">Editar</a>
-          <a th:href="@{'/users/delete/' + ${user.id}}" class="quick-link" th:text="#{user.delete}"
-             th:onclick="'return confirm(\'' + #{user.delete.confirm} + '\');'">Eliminar</a>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="user-filters">
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="userSearch" placeholder="Buscar por nombre, usuario, teléfono..." class="search-input" autocomplete="off">
+      </div>
+      <div class="filter-container">
+        <select id="statusFilter" class="filter-select">
+          <option value="all">Todos los estados</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+        </select>
+      </div>
+      <div class="filter-container">
+        <select id="roleFilter" class="filter-select">
+          <option value="all">Todos los roles</option>
+          <option value="ROLE_ADMIN">Administradores</option>
+          <option value="ROLE_STAFF">Personal</option>
+          <option value="ROLE_USER">Usuarios</option>
+        </select>
+      </div>
+    </div>
 
-    <div th:if="${users.isEmpty()}" class="alert alert-info" th:text="#{user.no.data}">
-      No hay usuarios registrados
+    <div class="table-responsive">
+      <table class="user-table">
+        <thead>
+        <tr>
+          <th th:text="#{user.field.id}" class="id-column">ID</th>
+          <th th:text="#{user.field.name}" class="name-column">Nombre</th>
+          <th th:text="#{user.field.lastName}" class="lastname-column">Apellido</th>
+          <th th:text="#{user.field.username}" class="username-column">Usuario</th>
+          <th th:text="#{user.field.phone}" class="phone-column">Teléfono</th>
+          <th th:text="#{user.field.role}" class="role-column">Rol</th>
+          <th th:text="#{user.field.status}" class="status-column">Estado</th>
+          <th th:text="#{user.field.actions}" class="actions-column">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}" class="user-row" th:data-status="${user.enabled}" th:data-role="${user.roles != null and !user.roles.isEmpty() ? user.roles.iterator().next().name : ''}">
+          <td th:text="${user.id}" class="id-column">1</td>
+          <td th:text="${user.name}" class="name-column">Juan</td>
+          <td th:text="${user.lastName}" class="lastname-column">Pérez</td>
+          <td th:text="${user.username}" class="username-column">jperez</td>
+          <td th:text="${user.phone ?: 'N/A'}" class="phone-column">1234567890</td>
+          <td class="role-column">
+                        <span th:each="role : ${user.roles}" th:remove="tag">
+                            <span th:if="${role.name == 'ROLE_ADMIN'}" class="status-badge status-admin" th:text="#{role.admin}">Administrador</span>
+                            <span th:if="${role.name == 'ROLE_USER'}" class="status-badge status-user" th:text="#{role.user}">Usuario</span>
+                            <span th:if="${role.name == 'ROLE_STAFF'}" class="status-badge status-staff" th:text="#{role.staff}">Personal</span>
+                        </span>
+          </td>
+          <td class="status-column">
+                        <span class="status-badge"
+                              th:classappend="${user.enabled ? 'status-active' : 'status-inactive'}"
+                              th:text="${user.enabled ? 'Activo' : 'Inactivo'}">Activo</span>
+          </td>
+          <td class="actions-column">
+            <div class="action-buttons">
+              <a th:href="@{'/users/edit/' + ${user.id}}" class="action-btn edit" title="Editar">
+                <i class="fas fa-edit"></i>
+              </a>
+              <a th:href="@{'/users/delete/' + ${user.id}}"
+                 class="action-btn delete"
+                 title="Eliminar">
+                <i class="fas fa-trash-alt"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${users.isEmpty()}" class="no-data-message">
+      <i class="fas fa-users no-data-icon"></i>
+      <p th:text="#{user.list.empty}">No hay usuarios registrados</p>
+    </div>
+
+    <div class="panel-footer">
+      <a th:href="@{/dashboard}" class="btn-secondary">
+        <i class="fas fa-arrow-left"></i>
+        <span>Volver al Dashboard</span>
+      </a>
     </div>
   </div>
 </div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div id="deleteUserModal" class="modal-overlay" style="display: none;">
+  <div class="modal-container">
+    <div class="modal-header">
+      <div class="modal-icon-container">
+        <i class="fas fa-exclamation-triangle modal-icon"></i>
+      </div>
+      <h3 class="modal-title">Confirmar Eliminación</h3>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-message">
+        ¿Está seguro de que desea eliminar al usuario <strong id="userToDelete"></strong>?
+      </p>
+      <p class="modal-warning">
+        <i class="fas fa-info-circle"></i>
+        Esta acción no se puede deshacer y se eliminarán todos los datos asociados al usuario.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" id="cancelDelete">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+      <button type="button" class="btn-danger" id="confirmDelete">
+        <i class="fas fa-trash-alt"></i>
+        Eliminar Usuario
+      </button>
+    </div>
+  </div>
+</div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/js/user/list.js}"></script>
+
+<!-- Script para mensaje de confirmación de eliminación -->
+<script th:inline="javascript">
+  const confirmDeleteMessage = /*[[#{user.delete.confirm}]]*/ '¿Está seguro de que desea eliminar este usuario?';
+</script>
 </body>
 </html>
