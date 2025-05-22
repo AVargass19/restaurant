@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class RestaurantTable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "table_id")
     @Schema(description = "Identificador único de la mesa", example = "1")
     private Long id;
