@@ -18,8 +18,8 @@
 <nav class="navbar">
   <div class="navbar-logo">Ambrosía</div>
   <div class="navbar-links">
-    <a th:href="@{/index}" th:text="#{nav.home}">Home</a>
-    <a th:href="@{/user/profile}" th:text="#{nav.profile}">Profile</a>
+    <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Inicio</a>
+    <a th:href="@{/users/profile}" th:text="#{nav.profile}">Profile</a>
     <a th:href="@{/logout}" th:text="#{nav.logout}">Logout</a>
   </div>
 </nav>
@@ -72,11 +72,27 @@
         <h2 class="panel-title" th:text="#{admin.quick.access}">Quick Access</h2>
         <i class="fas fa-bolt panel-icon"></i>
       </div>
-      <div class="quick-links">
-        <a th:href="@{/users}" class="quick-link" th:text="#{admin.manage.users}">Manage Users</a>
-        <a th:href="@{/tables}" class="quick-link" th:text="#{admin.manage.tables}">Manage Tables</a>
-        <a th:href="@{/reservations}" class="quick-link" th:text="#{admin.manage.reservations}">Manage Reservations</a>
-        <a th:href="@{/history}" class="quick-link" th:text="#{admin.view.history}">View History</a>
+      <div class="quick-links quick-links-centered">
+        <a th:href="@{/users}" class="quick-link" th:text="#{admin.manage.users}">
+          <i class="fas fa-users"></i>
+          Manage Users
+        </a>
+        <a th:href="@{/tables}" class="quick-link" th:text="#{admin.manage.tables}">
+          <i class="fas fa-table"></i>
+          Manage Tables
+        </a>
+        <a th:href="@{/reservations}" class="quick-link" th:text="#{admin.manage.reservations}">
+          <i class="fas fa-calendar-check"></i>
+          Manage Reservations
+        </a>
+        <a th:href="@{/history}" class="quick-link" th:text="#{admin.view.history}">
+          <i class="fas fa-history"></i>
+          View History
+        </a>
+        <a th:href="@{/users/report}" class="quick-link quick-link-report" th:text="#{admin.users.report}">
+          <i class="fas fa-file-pdf"></i>
+          Generate Users Report
+        </a>
       </div>
     </div>
 
@@ -112,9 +128,9 @@
             <td th:text="#{admin.table} + ' ' + ${reservation.table.id}">Table 1</td>
             <td th:text="${reservation.guests}">4</td>
             <td>
-            <span class="badge"
-                  th:classappend="${reservation.status.name() == 'ACTIVE' ? 'success' : (reservation.status.name() == 'PENDING' ? 'warning' : (reservation.status.name() == 'COMPLETED' ? 'info' : 'danger'))}"
-                  th:text="${reservation.status}">ACTIVE</span>
+          <span class="badge"
+                th:classappend="${reservation.status.name() == 'ACTIVE' ? 'success' : (reservation.status.name() == 'PENDING' ? 'warning' : (reservation.status.name() == 'COMPLETED' ? 'info' : 'danger'))}"
+                th:text="${reservation.status}">ACTIVE</span>
             </td>
             <td>
               <div class="action-buttons">
@@ -164,9 +180,9 @@
             <td th:text="${#temporals.format(action.createdAt, 'dd/MM/yyyy HH:mm')}">15/05/2025 14:30</td>
             <td th:text="${action.user.name + ' ' + action.user.lastName}">John Doe</td>
             <td>
-          <span class="badge"
-                th:classappend="${action.action.name() == 'CREATE' ? 'success' : (action.action.name() == 'UPDATE' ? 'warning' : 'danger')}"
-                th:text="${action.action}">CREATE</span>
+        <span class="badge"
+              th:classappend="${action.action.name() == 'CREATE' ? 'success' : (action.action.name() == 'UPDATE' ? 'warning' : 'danger')}"
+              th:text="${action.action}">CREATE</span>
             </td>
             <td>
               <a th:if="${action.reservation != null}"
