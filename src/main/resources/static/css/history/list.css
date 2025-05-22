@@ -308,6 +308,78 @@
     padding-bottom: 20px;
 }
 
+/* Contenedor de filtros */
+.filter-container {
+    margin-bottom: 20px;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filter-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Botón de dashboard pequeño */
+.btn-back-small {
+    padding: 8px 16px;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+/* Enlaces de filtros con estado activo rojo */
+.quick-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-link {
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #495057;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quick-link:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #212529;
+}
+
+.quick-link.active-red {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: white;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.quick-link.active-red:hover {
+    background: #c82333;
+    border-color: #bd2130;
+    color: white;
+}
+
+/* Iconos en los filtros */
+.quick-link i {
+    font-size: 14px;
+}
+
 /* Ajustes para pantallas ultrapequeñas */
 @media (max-width: 360px) {
     .history-meta-info {

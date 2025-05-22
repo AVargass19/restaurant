@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head('Historial de Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head(#{history.title})}"></head>
 <link rel="stylesheet" th:href="@{/css/styles.css}">
 <link rel="stylesheet" th:href="@{/css/dashboard/main.css}">
 <link rel="stylesheet" th:href="@{/css/dashboard/tables.css}">
@@ -18,11 +18,35 @@
         </div>
 
         <!-- Filtros rápidos -->
-        <div class="quick-links">
-            <a th:href="@{/history}" class="quick-link" th:classappend="${param.action == null ? 'active' : ''}">Todas</a>
-            <a th:href="@{/history/action/CREATE}" class="quick-link" th:classappend="${param.action != null && param.action[0] == 'CREATE' ? 'active' : ''}">Creaciones</a>
-            <a th:href="@{/history/action/UPDATE}" class="quick-link" th:classappend="${param.action != null && param.action[0] == 'UPDATE' ? 'active' : ''}">Modificaciones</a>
-            <a th:href="@{/history/action/DELETE}" class="quick-link" th:classappend="${param.action != null && param.action[0] == 'DELETE' ? 'active' : ''}">Eliminaciones</a>
+        <div class="filter-container">
+            <div class="filter-header">
+                <h3>Filtrar por acción:</h3>
+                <a th:href="@{/dashboard}" class="btn btn-primary btn-back-small">
+                    <i class="fas fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
+            <div class="quick-links">
+                <a th:href="@{/history}"
+                   class="quick-link"
+                   th:classappend="${param.action == null ? 'active-red' : ''}">
+                    <i class="fas fa-list"></i> Todas
+                </a>
+                <a th:href="@{/history/action/CREATE}"
+                   class="quick-link"
+                   th:classappend="${param.action != null && param.action[0] == 'CREATE' ? 'active-red' : ''}">
+                    <i class="fas fa-plus-circle"></i> Creaciones
+                </a>
+                <a th:href="@{/history/action/UPDATE}"
+                   class="quick-link"
+                   th:classappend="${param.action != null && param.action[0] == 'UPDATE' ? 'active-red' : ''}">
+                    <i class="fas fa-edit"></i> Modificaciones
+                </a>
+                <a th:href="@{/history/action/DELETE}"
+                   class="quick-link"
+                   th:classappend="${param.action != null && param.action[0] == 'DELETE' ? 'active-red' : ''}">
+                    <i class="fas fa-trash"></i> Eliminaciones
+                </a>
+            </div>
         </div>
 
         <!-- Buscador en tiempo real -->
