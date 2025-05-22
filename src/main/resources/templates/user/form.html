@@ -1,84 +1,161 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
-<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<head th:replace="~{fragments/layout :: head(${user.id != null ? 'Editar Usuario' : 'Nuevo Usuario'})}"></head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" th:href="@{/css/user/form.css}">
+
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 
 <div class="container">
-    <div class="panel">
+    <div class="user-form-panel">
         <div class="panel-header">
-            <h2 class="panel-title" th:text="${userDto.id == null ? #{user.create.title} : #{user.edit.title}}">Nuevo Usuario</h2>
-            <i class="fas fa-user-plus panel-icon"></i>
+            <div class="header-content">
+                <i class="fas fa-user-plus panel-icon" th:if="${user.id == null}"></i>
+                <i class="fas fa-user-edit panel-icon" th:if="${user.id != null}"></i>
+                <h2 class="panel-title" th:text="${user.id != null ? 'Editar Usuario' : 'Nuevo Usuario'}">Nuevo Usuario</h2>
+            </div>
+            <div class="user-icon-container">
+                <i class="fas fa-users"></i>
+            </div>
         </div>
 
-        <form th:action="${userDto.id == null ? '/users/create' : '/users/edit/' + userDto.id}" method="post" th:object="${userDto}">
+        <!-- Mensajes de éxito y error -->
+        <div th:if="${successMessage}" class="alert alert-success">
+            <i class="fas fa-check-circle alert-icon"></i>
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <i class="fas fa-exclamation-circle alert-icon"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Formulario -->
+        <form th:action="${user.id != null ? '/users/edit/' + user.id : '/users/create'}"
+              th:object="${user}"
+              method="post"
+              class="user-form">
+
             <input type="hidden" th:field="*{id}" />
 
             <!-- Nombre -->
             <div class="form-group">
-                <label for="name" th:text="#{user.name}">Nombre</label>
-                <input type="text" id="name" th:field="*{name}" class="form-control" required />
+                <label for="name">Nombre</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="name" th:field="*{name}" class="form-control"
+                           placeholder="Ingrese el nombre" required />
+                </div>
                 <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
             </div>
 
-            <!-- Apellidos -->
+            <!-- Apellido -->
             <div class="form-group">
-                <label for="lastName" th:text="#{user.lastName}">Apellidos</label>
-                <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required />
+                <label for="lastName">Apellido</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="lastName" th:field="*{lastName}" class="form-control"
+                           placeholder="Ingrese el apellido" required />
+                </div>
                 <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
             </div>
 
-            <!-- Nombre de usuario -->
+            <!-- Nombre de Usuario -->
             <div class="form-group">
-                <label for="username" th:text="#{user.username}">Nombre de usuario</label>
-                <input type="text" id="username" th:field="*{username}" class="form-control" required th:readonly="${userDto.id != null}" />
+                <label for="username">Nombre de Usuario</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-at input-icon"></i>
+                    <input type="text" id="username" th:field="*{username}" class="form-control"
+                           placeholder="Ingrese el nombre de usuario" required />
+                </div>
                 <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
-            </div>
-
-            <!-- Contraseña -->
-            <div class="form-group">
-                <label for="password" th:text="#{user.password}">Contraseña</label>
-                <input type="password" id="password" th:field="*{password}" class="form-control" th:required="${userDto.id == null}" />
-                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-            </div>
-
-            <!-- Confirmar Contraseña -->
-            <div class="form-group">
-                <label for="confirmPassword" th:text="#{user.confirm.password}">Confirmar Contraseña</label>
-                <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" th:required="${userDto.id == null}" />
-                <div class="text-danger" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                <div id="usernameMessage" class="username-feedback"></div>
             </div>
 
             <!-- Teléfono -->
             <div class="form-group">
-                <label for="phone" th:text="#{user.phone}">Teléfono</label>
-                <input type="text" id="phone" th:field="*{phone}" class="form-control" />
+                <label for="phone">Teléfono</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" id="phone" th:field="*{phone}" class="form-control"
+                           placeholder="Ingrese el teléfono" />
+                </div>
                 <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+            </div>
+
+            <!-- Contraseña (solo en creación) -->
+            <div class="form-group" th:if="${user.id == null}">
+                <label for="password">Contraseña</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" th:field="*{password}" class="form-control"
+                           placeholder="Ingrese la contraseña" required />
+                </div>
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <!-- Confirmar Contraseña (solo en creación) -->
+            <div class="form-group" th:if="${user.id == null}">
+                <label for="confirmPassword">Confirmar Contraseña</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                           placeholder="Confirme la contraseña" required />
+                </div>
+                <div id="passwordMessage" class="password-feedback"></div>
             </div>
 
             <!-- Rol -->
             <div class="form-group">
-                <label for="role" th:text="#{user.role}">Rol</label>
-                <select id="role" th:field="*{role}" class="form-control" required>
-                    <option th:each="role : ${roles}" th:value="${role.name}" th:text="${role.name}">ROLE_USER</option>
-                </select>
+                <label for="role">Rol</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user-tag input-icon"></i>
+                    <select id="role" name="role" class="form-control" required>
+                        <option value="">Seleccione un rol</option>
+                        <option value="ROLE_USER"
+                                th:selected="${user.role == 'ROLE_USER'}">
+                            Usuario
+                        </option>
+                        <option value="ROLE_STAFF"
+                                th:selected="${user.role == 'ROLE_STAFF'}">
+                            Personal
+                        </option>
+                        <option value="ROLE_ADMIN"
+                                th:selected="${user.role == 'ROLE_ADMIN'}">
+                            Administrador
+                        </option>
+                    </select>
+                </div>
+                <div class="text-danger" th:if="${#fields.hasErrors('role')}" th:errors="*{role}"></div>
             </div>
 
-            <!-- Estado -->
+            <!-- Estado Activo -->
             <div class="form-group">
-                <label for="enabled" th:text="#{user.status}">Estado</label>
-                <select id="enabled" th:field="*{enabled}" class="form-control">
-                    <option th:value="true" th:text="#{user.active}">Activo</option>
-                    <option th:value="false" th:text="#{user.inactive}">Inactivo</option>
-                </select>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="enabled" th:field="*{enabled}" class="form-checkbox" />
+                    <span>Usuario activo</span>
+                </label>
             </div>
 
-            <div class="form-group">
-                <button type="submit" class="quick-link" th:text="${userDto.id == null ? #{user.create.button} : #{user.edit.button}}">Guardar</button>
-                <a th:href="@{/users}" class="quick-link" th:text="#{user.cancel.button}">Cancelar</a>
+            <!-- Botones de acción -->
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i>
+                    <span th:text="${user.id != null ? 'Actualizar Usuario' : 'Crear Usuario'}">Crear Usuario</span>
+                </button>
+                <a th:href="@{/users}" class="btn-secondary">
+                    <i class="fas fa-times"></i>
+                    <span>Cancelar</span>
+                </a>
             </div>
         </form>
     </div>
 </div>
+
+<div th:replace="~{fragments/layout :: footer}"></div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+<script th:src="@{/js/user/form.js}"></script>
+
 </body>
 </html>
