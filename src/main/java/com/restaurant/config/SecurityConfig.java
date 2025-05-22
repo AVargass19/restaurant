@@ -52,7 +52,13 @@ public class SecurityConfig implements WebMvcConfigurer {
                         // Permitir cambios de idioma sin autenticación
                         .requestMatchers(request -> request.getParameterMap().containsKey("lang")).permitAll()
 
-                        // Rutas para administradores
+                        // Rutas específicas del perfil
+                        .requestMatchers("/users/profile", "/users/profile/**").authenticated()
+
+                        // API para verificar username (solo admin)
+                        .requestMatchers("/users/api/**").hasRole("ADMIN")
+
+                        // Rutas para administradores (gestión de usuarios)
                         .requestMatchers("/admin/**", "/users/**", "/history/**", "/usuarios/**", "/historial/**").hasRole("ADMIN")
 
                         // Rutas para administradores y staff
@@ -64,12 +70,10 @@ public class SecurityConfig implements WebMvcConfigurer {
                         // Excepción para la vista de mesas disponibles (accesible para todos los usuarios autenticados)
                         .requestMatchers("/tables/available").authenticated()
 
-                        // Permitir a los usuarios regulares acceder a su perfil
-                        .requestMatchers("/user/profile/**").authenticated()
-
                         // Rutas específicas para reservas - más detalladas
                         .requestMatchers("/reservations/delete/**", "/reservas/eliminar/**").hasRole("ADMIN")
                         .requestMatchers("/reservations/complete/**", "/reservas/completar/**").hasAnyRole("ADMIN", "STAFF")
+
                         // Permitir a usuarios autenticados acceder a crear, ver y gestionar sus propias reservas
                         .requestMatchers("/reservations", "/reservations/create", "/reservations/edit/**", "/reservations/cancel/**").authenticated()
 
