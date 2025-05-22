@@ -7,6 +7,7 @@ import com.restaurant.service.RestaurantTableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.context.MessageSource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,11 +32,14 @@ public class RestaurantTableController {
 
     private final RestaurantTableService tableService;
     private final ReservationRepository reservationRepository;
+    private final MessageSource messageSource;
 
     public RestaurantTableController(RestaurantTableService tableService,
-                                     ReservationRepository reservationRepository) {
+                                     ReservationRepository reservationRepository,
+                                     MessageSource messageSource) {
         this.tableService = tableService;
         this.reservationRepository = reservationRepository;
+        this.messageSource = messageSource;
     }
 
     @GetMapping
@@ -71,9 +76,17 @@ public class RestaurantTableController {
     @PostMapping("/create")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Crear mesa", description = "Crea una nueva mesa en el sistema")
-    public String createTable(@ModelAttribute RestaurantTable table, RedirectAttributes attributes) {
-        tableService.save(table);
-        attributes.addFlashAttribute("successMessage", "Mesa creada correctamente");
+    public String createTable(@ModelAttribute RestaurantTable table,
+                              RedirectAttributes attributes,
+                              Locale locale) {
+        try {
+            tableService.save(table);
+            String message = messageSource.getMessage("table.create.success", null, locale);
+            attributes.addFlashAttribute("successMessage", message);
+        } catch (Exception e) {
+            String message = messageSource.getMessage("table.create.error", null, locale);
+            attributes.addFlashAttribute("errorMessage", message);
+        }
         return "redirect:/tables";
     }
 
@@ -82,14 +95,21 @@ public class RestaurantTableController {
     @Operation(summary = "Mostrar formulario de edición", description = "Formulario para editar una mesa existente")
     public String showEditForm(
             @Parameter(description = "ID de la mesa a editar") @PathVariable Long id,
-            Model model) {
+            Model model,
+            Locale locale) {
 
-        RestaurantTable table = tableService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
+        try {
+            RestaurantTable table = tableService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
 
-        model.addAttribute("table", table);
-        model.addAttribute("statuses", RestaurantTable.TableStatus.values());
-        return "table/form";
+            model.addAttribute("table", table);
+            model.addAttribute("statuses", RestaurantTable.TableStatus.values());
+            return "table/form";
+        } catch (Exception e) {
+            String message = messageSource.getMessage("table.not.found", null, locale);
+            model.addAttribute("errorMessage", message);
+            return "redirect:/tables";
+        }
     }
 
     @PostMapping("/edit/{id}")
@@ -98,11 +118,18 @@ public class RestaurantTableController {
     public String updateTable(
             @Parameter(description = "ID de la mesa a actualizar") @PathVariable Long id,
             @ModelAttribute RestaurantTable table,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes,
+            Locale locale) {
 
-        table.setId(id);
-        tableService.save(table);
-        attributes.addFlashAttribute("successMessage", "Mesa actualizada correctamente");
+        try {
+            table.setId(id);
+            tableService.save(table);
+            String message = messageSource.getMessage("table.update.success", null, locale);
+            attributes.addFlashAttribute("successMessage", message);
+        } catch (Exception e) {
+            String message = messageSource.getMessage("table.update.error", null, locale);
+            attributes.addFlashAttribute("errorMessage", message);
+        }
         return "redirect:/tables";
     }
 
@@ -111,10 +138,27 @@ public class RestaurantTableController {
     @Operation(summary = "Eliminar mesa", description = "Elimina una mesa del sistema")
     public String deleteTable(
             @Parameter(description = "ID de la mesa a eliminar") @PathVariable Long id,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes,
+            Locale locale) {
 
-        tableService.delete(id);
-        attributes.addFlashAttribute("successMessage", "Mesa eliminada correctamente");
+        try {
+            tableService.delete(id);
+            String message = messageSource.getMessage("table.delete.success", null, locale);
+            attributes.addFlashAttribute("successMessage", message);
+        } catch (RuntimeException e) {
+            String message;
+            if (e.getMessage().contains("reservas activas")) {
+                message = messageSource.getMessage("table.delete.error.active.reservations", null, locale);
+            } else if (e.getMessage().contains("no encontrada")) {
+                message = messageSource.getMessage("table.not.found", null, locale);
+            } else {
+                message = messageSource.getMessage("table.delete.error", null, locale);
+            }
+            attributes.addFlashAttribute("errorMessage", message);
+        } catch (Exception e) {
+            String message = messageSource.getMessage("table.delete.error", null, locale);
+            attributes.addFlashAttribute("errorMessage", message);
+        }
         return "redirect:/tables";
     }
 
@@ -124,10 +168,17 @@ public class RestaurantTableController {
     public String updateTableStatus(
             @Parameter(description = "ID de la mesa") @PathVariable Long id,
             @Parameter(description = "Nuevo estado de la mesa") @PathVariable RestaurantTable.TableStatus status,
-            RedirectAttributes attributes) {
+            RedirectAttributes attributes,
+            Locale locale) {
 
-        tableService.updateStatus(id, status);
-        attributes.addFlashAttribute("successMessage", "Estado de mesa actualizado correctamente");
+        try {
+            tableService.updateStatus(id, status);
+            String message = messageSource.getMessage("table.status.update.success", null, locale);
+            attributes.addFlashAttribute("successMessage", message);
+        } catch (Exception e) {
+            String message = messageSource.getMessage("table.status.update.error", null, locale);
+            attributes.addFlashAttribute("errorMessage", message);
+        }
         return "redirect:/tables";
     }
 
