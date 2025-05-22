@@ -5,16 +5,21 @@ import com.restaurant.model.User;
 import com.restaurant.dto.UserDto;
 import com.restaurant.repository.RoleRepository;
 import com.restaurant.repository.UserRepository;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -99,5 +104,61 @@ public class UserService {
         String username = authentication.getName();
         return findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    }
+
+    public void changePassword(String currentPassword, String newPassword) {
+        // Obtener el usuario actual
+        User currentUser = getCurrentUser();
+
+        // Verificar que la contraseña actual sea correcta
+        if (!passwordEncoder.matches(currentPassword, currentUser.getPassword())) {
+            throw new IllegalArgumentException("La contraseña actual es incorrecta");
+        }
+
+        // Validar que la nueva contraseña sea diferente
+        if (passwordEncoder.matches(newPassword, currentUser.getPassword())) {
+            throw new IllegalArgumentException("La nueva contraseña debe ser diferente a la actual");
+        }
+
+        // Validar longitud mínima
+        if (newPassword.length() < 6) {
+            throw new IllegalArgumentException("La nueva contraseña debe tener al menos 6 caracteres");
+        }
+
+        // Actualizar la contraseña
+        currentUser.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(currentUser);
+    }
+
+    @Autowired
+    private ResourceLoader resourceLoader;
+
+    public byte[] generateUsersReport(List<User> users) throws Exception {
+        try {
+            // Cargar el archivo .jrxml desde resources/reports
+            Resource resource = resourceLoader.getResource("classpath:reports/users_report.jrxml");
+            InputStream inputStream = resource.getInputStream();
+
+            // Compilar el reporte
+            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
+
+            // Crear el datasource con los usuarios
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(users);
+
+            // Parámetros del reporte
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("reportTitle", "Reporte de Usuarios");
+            parameters.put("generatedDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+            parameters.put("totalUsers", users.size());
+
+            // Llenar el reporte
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            // Exportar a PDF
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error generando reporte de usuarios: " + e.getMessage(), e);
+        }
     }
 }
