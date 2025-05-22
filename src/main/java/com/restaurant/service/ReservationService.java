@@ -90,10 +90,9 @@ public class ReservationService {
         List<Reservation> allReservations = reservationRepository.findAll();
         return allReservations.stream()
                 .sorted((r1, r2) -> r2.getDate().compareTo(r1.getDate())) // Ordenar por fecha descendente
-                .limit(limit) // Limitar la cantidad de resultados
+                .limit(limit)
                 .collect(Collectors.toList());
     }
-
 
     @Transactional
     public Reservation create(ReservationDto reservationDto) {
@@ -258,28 +257,5 @@ public class ReservationService {
         RestaurantTable table = reservation.getTable();
         table.setStatus(RestaurantTable.TableStatus.AVAILABLE);
         tableRepository.save(table);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        // Solo admins pueden eliminar reservas
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        boolean isAdmin = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-
-        if (!isAdmin) {
-            throw new AccessDeniedException("No tienes permiso para eliminar reservas");
-        }
-
-        Reservation reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-
-        // Liberar la mesa si estaba reservada
-        if (reservation.getStatus() == Reservation.ReservationStatus.ACTIVE) {
-            RestaurantTable table = reservation.getTable();
-            table.setStatus(RestaurantTable.TableStatus.AVAILABLE);
-            tableRepository.save(table);
-        }
-
-        reservationRepository.deleteById(id);
     }
 }
