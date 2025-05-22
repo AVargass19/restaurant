@@ -113,7 +113,7 @@
                         <span sec:authentication="name">Usuario</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" th:href="@{/perfil}" th:text="#{nav.profile}">Perfil</a></li>
+                        <li><a class="dropdown-item" th:href="@{/users/profile}" th:text="#{nav.profile}">Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form th:action="@{/logout}" method="post">
