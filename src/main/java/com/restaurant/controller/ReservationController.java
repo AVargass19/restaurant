@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/reservations")
@@ -63,11 +66,34 @@ public class ReservationController {
             User user = userRepository.findById(userDetails.getId()).orElseThrow();
             reservations = reservationService.findByUser(user);
         }
+        reservations = sortReservationsByStatusAndDate(reservations);
 
         model.addAttribute("reservations", reservations);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("isStaff", isStaff);
         return "reservation/list";
+    }
+
+    //Ordenar las reservas
+    private List<Reservation> sortReservationsByStatusAndDate(List<Reservation> reservations) {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Dividir en activas y no activas (completadas, canceladas)
+        List<Reservation> activeReservations = reservations.stream()
+                .filter(r -> r.getStatus() == Reservation.ReservationStatus.ACTIVE)
+                .sorted(Comparator.comparing(Reservation::getDate)) // Ordenar por fecha ascendente para activas
+                .collect(Collectors.toList());
+
+        List<Reservation> inactiveReservations = reservations.stream()
+                .filter(r -> r.getStatus() != Reservation.ReservationStatus.ACTIVE)
+                .sorted(Comparator.comparing(Reservation::getDate).reversed()) // Ordenar por fecha ascendente para no activas
+                .collect(Collectors.toList());
+
+        // Combinar las listas: primero activas, luego no activas
+        List<Reservation> sortedReservations = new ArrayList<>(activeReservations);
+        sortedReservations.addAll(inactiveReservations);
+
+        return sortedReservations;
     }
 
     @GetMapping("/create")
@@ -306,23 +332,6 @@ public class ReservationController {
         try {
             reservationService.complete(id);
             attributes.addFlashAttribute("successMessage", "Reserva completada correctamente");
-        } catch (Exception e) {
-            attributes.addFlashAttribute("errorMessage", e.getMessage());
-        }
-
-        return "redirect:/reservations";
-    }
-
-    @GetMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @Operation(summary = "Eliminar reserva", description = "Elimina una reserva del sistema")
-    public String deleteReservation(
-            @Parameter(description = "ID de la reserva a eliminar") @PathVariable Long id,
-            RedirectAttributes attributes) {
-
-        try {
-            reservationService.delete(id);
-            attributes.addFlashAttribute("successMessage", "Reserva eliminada correctamente");
         } catch (Exception e) {
             attributes.addFlashAttribute("errorMessage", e.getMessage());
         }
