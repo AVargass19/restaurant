@@ -1,10 +1,332 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title>About Us</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{about.title}">Sobre Nosotros - Ambrosía</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/general/about-us.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<h1>Página About Us</h1>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#" th:text="#{app.name}">Ambrosía</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/menu}" th:text="#{nav.menu}">Menú</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/reservation/form.html}" th:text="#{nav.reservations}">Reservas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/about-us}" th:text="#{nav.about}">Sobre Nosotros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#footer-contact" th:text="#{nav.contact}">Contacto</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAnonymous()')}">
+                    <a class="nav-link" th:href="@{/login}" th:text="#{nav.login}">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/dashboard}" th:text="#{nav.dashboard}">Panel</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="?lang=es">Español</a></li>
+                        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                        <li><a class="dropdown-item" href="?lang=it">Italiano</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- About Hero Section -->
+<section class="about-hero">
+    <div class="container">
+        <h1 th:text="#{about.hero.title}">Nuestra Historia</h1>
+        <p th:text="#{about.hero.subtitle}">Más de una década creando experiencias gastronómicas inolvidables en el corazón de la ciudad</p>
+    </div>
+</section>
+
+<!-- Story Section -->
+<section class="section story-section">
+    <div class="container">
+        <h2 class="section-title">La Esencia de Ambrosía</h2>
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="story-content">
+                    <p>Desde nuestros humildes comienzos en 2012, Ambrosía ha sido mucho más que un restaurante; hemos sido un santuario donde la pasión por la gastronomía se encuentra con la excelencia en el servicio. Nuestro nombre, inspirado en la comida de los dioses de la mitología griega, refleja nuestra misión de ofrecer experiencias culinarias que trascienden lo ordinario.</p>
+
+                    <p>Ubicados en el corazón de la ciudad, nos especializamos en crear momentos mágicos durante las horas doradas de la noche, cuando la ciudad se transforma y nosotros abrimos nuestras puertas para recibir a aquellos que buscan algo extraordinario.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?ixlib=rb-4.0.3" alt="Ambrosía Restaurant Interior" class="img-fluid rounded shadow">
+            </div>
+        </div>
+
+        <div class="story-highlight">
+            "En Ambrosía, creemos que cada cena es una ceremonia, cada plato una obra de arte, y cada cliente un invitado de honor en nuestra casa."
+        </div>
+
+        <div class="row align-items-center">
+            <div class="col-md-6 order-md-2">
+                <div class="story-content">
+                    <p>Nuestro concepto gastronómico fusiona las técnicas clásicas de la alta cocina francesa con influencias mediterráneas y toques de innovación contemporánea. Cada elemento en nuestro menú ha sido cuidadosamente seleccionado para crear una sinfonía de sabores que evoluciona con las estaciones del año.</p>
+
+                    <p>El ambiente nocturno de Ambrosía ha sido diseñado para despertar todos los sentidos: desde la iluminación cálida que acaricia cada mesa, hasta la selección musical que acompaña cada momento de la velada, todo converge para crear una experiencia sensorial completa e inolvidable.</p>
+                </div>
+            </div>
+            <div class="col-md-6 order-md-1">
+                <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?ixlib=rb-4.0.3" alt="Chef preparing dish" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chef Section -->
+<section class="section chef-section">
+    <div class="container">
+        <h2 class="section-title">Nuestro Equipo Gastronómico</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="chef-card">
+                    <div class="chef-image" style="background-image: url('https://images.unsplash.com/photo-1583394293214-28ded15ee548?ixlib=rb-4.0.3');">
+                        <div class="chef-overlay">
+                            <div class="chef-name">Marco Delacroix</div>
+                            <div class="chef-title">Chef Ejecutivo</div>
+                        </div>
+                    </div>
+                    <div class="chef-info">
+                        <p class="chef-bio">Con más de 20 años de experiencia en restaurantes Michelin, Marco lidera nuestra cocina con una visión innovadora que respeta las tradiciones culinarias clásicas mientras abraza la creatividad contemporánea.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="chef-card">
+                    <div class="chef-image" style="background-image: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?ixlib=rb-4.0.3');">
+                        <div class="chef-overlay">
+                            <div class="chef-name">Isabella Rosetti</div>
+                            <div class="chef-title">Chef Pastelera</div>
+                        </div>
+                    </div>
+                    <div class="chef-info">
+                        <p class="chef-bio">Formada en las mejores escuelas de repostería de París, Isabella transforma cada postre en una experiencia artística que culmina perfectamente nuestros menús degustación.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="chef-card">
+                    <div class="chef-image" style="background-image: url('https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?ixlib=rb-4.0.3');">
+                        <div class="chef-overlay">
+                            <div class="chef-name">Alexandre Dubois</div>
+                            <div class="chef-title">Sumiller</div>
+                        </div>
+                    </div>
+                    <div class="chef-info">
+                        <p class="chef-bio">Maestro en el arte del maridaje, Alexandre ha curado una bodega excepcional y guía a nuestros clientes en el descubrimiento de combinaciones perfectas entre vino y gastronomía.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="section values-section">
+    <div class="container">
+        <h2 class="section-title">Nuestros Valores</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="value-title">Sostenibilidad</h3>
+                    <p class="value-description">Trabajamos exclusivamente con proveedores locales y orgánicos, apoyando la agricultura sostenible y reduciendo nuestra huella ambiental.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="value-title">Excelencia</h3>
+                    <p class="value-description">Cada detalle importa. Desde la selección de ingredientes hasta la presentación final, perseguimos la perfección en cada aspecto.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3 class="value-title">Innovación</h3>
+                    <p class="value-description">Experimentamos constantemente con nuevas técnicas y sabores, manteniendo siempre el equilibrio entre tradición e innovación.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="value-title">Pasión</h3>
+                    <p class="value-description">Cada miembro de nuestro equipo comparte la misma pasión por crear experiencias gastronómicas memorables y excepcionales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Timeline Section -->
+<section class="section timeline-section">
+    <div class="container">
+        <h2 class="section-title">Nuestra Evolución</h2>
+        <div class="timeline">
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-year">2012</div>
+                    <h4>El Nacimiento</h4>
+                    <p>Ambrosía abre sus puertas con una visión clara: crear experiencias gastronómicas nocturnas excepcionales en un ambiente íntimo y sofisticado.</p>
+                </div>
+            </div>
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-year">2015</div>
+                    <h4>Primera Estrella Michelin</h4>
+                    <p>Reconocimiento internacional con nuestra primera estrella Michelin, validando nuestro compromiso con la excelencia culinaria.</p>
+                </div>
+            </div>
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-year">2018</div>
+                    <h4>Renovación Completa</h4>
+                    <p>Remodelación integral del restaurante, incorporando elementos de diseño contemporáneo mientras mantenemos la calidez y elegancia características.</p>
+                </div>
+            </div>
+            <div class="timeline-item right">
+                <div class="timeline-content">
+                    <div class="timeline-year">2021</div>
+                    <h4>Programa Sostenibilidad</h4>
+                    <p>Lanzamiento de nuestro programa de sostenibilidad "Mesa Verde", comprometiéndonos con prácticas gastronómicas responsables.</p>
+                </div>
+            </div>
+            <div class="timeline-item left">
+                <div class="timeline-content">
+                    <div class="timeline-year">2024</div>
+                    <h4>Reconocimiento AAA</h4>
+                    <p>Obtención del prestigioso reconocimiento AAA Five Diamond, consolidando nuestra posición entre los mejores restaurantes de la región.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Awards Section -->
+<section class="section awards-section">
+    <div class="container">
+        <h2 class="section-title">Reconocimientos</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="award-item">
+                    <div class="award-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="award-title">Estrella Michelin</div>
+                    <div class="award-year">2015 - 2025</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="award-item">
+                    <div class="award-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="award-title">AAA Five Diamond</div>
+                    <div class="award-year">2024</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="award-item">
+                    <div class="award-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="award-title">Wine Spectator Grand Award</div>
+                    <div class="award-year">2020 - 2025</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="award-item">
+                    <div class="award-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="award-title">Forbes Five Star</div>
+                    <div class="award-year">2022 - 2025</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section" style="background-color: var(--crema-suave); text-align: center;">
+    <div class="container">
+        <h2 style="color: var(--burdeos-principal); margin-bottom: 30px;">Forma Parte de Nuestra Historia</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Te invitamos a ser parte de la próxima página de nuestra historia gastronómica</p>
+        <a th:href="@{/reservation/form.html}" class="btn btn-primary btn-lg">Reservar Mesa</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4" id="footer-contact">
+                <h5 th:text="#{footer.about.title}">Ambrosía</h5>
+                <p th:text="#{footer.about.text}">Experiencia gastronómica de alta cocina en un ambiente exclusivo.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.contact.title}">Contacto</h5>
+                <p><i class="fas fa-map-marker-alt"></i> <span th:text="#{footer.address}">Calle Gourmet 123, Ciudad</span></p>
+                <p><i class="fas fa-phone"></i> <span th:text="#{footer.phone}">+34 912 345 678</span></p>
+                <p><i class="fas fa-envelope"></i> <span th:text="#{footer.email}">reservas@ambrosia.com</span></p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.hours.title}">Horario</h5>
+                <p><span th:text="#{footer.hours.lunch}">Comidas: 13:00 - 15:30</span></p>
+                <p><span th:text="#{footer.hours.dinner}">Cenas: 20:00 - 23:00</span></p>
+                <p><span th:text="#{footer.hours.closed}">Cerrado: Lunes</span></p>
+            </div>
+        </div>
+        <hr class="mt-4 mb-4" style="border-color: var(--crema-suave);">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-0" th:text="#{footer.copyright}">© 2025 Ambrosía. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="language-selector">
+                    <a href="?lang=es">ES</a> |
+                    <a href="?lang=en">EN</a> |
+                    <a href="?lang=it">IT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
