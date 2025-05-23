@@ -1,0 +1,241 @@
+:root {
+    --burdeos-principal: #8C1C13;
+    --crema-suave: #F5F5F0;
+    --marron-calido: #5D4037;
+    --gris-marengo: #4F5459;
+    --burdeos-claro: #AB4E3C;
+    --gris-claro: #7E8C8D;
+    --warm-beige: #E6D2B5;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    background-color: var(--crema-suave);
+    color: var(--marron-calido);
+}
+
+.navbar {
+    background-color: var(--burdeos-principal);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--crema-suave) !important;
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: bold;
+}
+
+.menu-hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?ixlib=rb-4.0.3');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+}
+
+.menu-hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    font-family: 'Playfair Display', serif;
+}
+
+.menu-hero p {
+    font-size: 1.3rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.section {
+    padding: 60px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    color: var(--burdeos-principal);
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+}
+
+.menu-category {
+    background-color: white;
+    border-radius: 15px;
+    padding: 40px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.menu-category:hover {
+    transform: translateY(-5px);
+}
+
+.category-title {
+    color: var(--burdeos-principal);
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.category-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: var(--burdeos-principal);
+}
+
+.menu-item {
+    border-bottom: 1px dotted var(--gris-claro);
+    padding: 20px 0;
+    transition: background-color 0.3s ease;
+}
+
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item:hover {
+    background-color: var(--warm-beige);
+    border-radius: 8px;
+    padding: 20px 15px;
+}
+
+.dish-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.dish-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--marron-calido);
+    font-family: 'Playfair Display', serif;
+}
+
+.dish-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--burdeos-principal);
+    margin-left: 20px;
+}
+
+.dish-description {
+    font-style: italic;
+    color: var(--gris-claro);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.wine-pairing {
+    background-color: var(--warm-beige);
+}
+
+.wine-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px dotted var(--gris-claro);
+}
+
+.wine-item:last-child {
+    border-bottom: none;
+}
+
+.wine-details {
+    flex-grow: 1;
+}
+
+.wine-name {
+    font-weight: 600;
+    color: var(--marron-calido);
+}
+
+.wine-origin {
+    font-size: 0.9rem;
+    color: var(--gris-claro);
+    font-style: italic;
+}
+
+.wine-price {
+    font-weight: bold;
+    color: var(--burdeos-principal);
+    margin-left: 20px;
+}
+
+.chef-recommendation {
+    background-color: var(--burdeos-principal);
+    color: white;
+    padding: 60px 0;
+}
+
+.chef-recommendation .section-title {
+    color: white;
+}
+
+.recommendation-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.chef-signature {
+    font-style: italic;
+    color: var(--gris-claro);
+    margin-top: 20px;
+}
+
+footer {
+    background-color: var(--gris-marengo);
+    color: var(--crema-suave);
+    padding: 40px 0;
+}
+
+.language-selector {
+    margin-left: 15px;
+}
+
+.language-selector a {
+    color: var(--crema-suave);
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.language-selector a:hover {
+    text-decoration: underline;
+}
+
+.btn-primary {
+    background-color: var(--burdeos-principal);
+    border-color: var(--burdeos-principal);
+}
+
+.btn-primary:hover {
+    background-color: var(--burdeos-claro);
+    border-color: var(--burdeos-claro);
+}
+
+@media (max-width: 768px) {
+    .dish-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dish-price {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+}

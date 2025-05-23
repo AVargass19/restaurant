@@ -1,10 +1,304 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
 <head>
     <meta charset="UTF-8">
-    <title>Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{menu.title}">Menú - Ambrosía</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/general/menu.css}">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-<h1>Página menú</h1>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#" th:text="#{app.name}">Ambrosía</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}" th:text="#{nav.home}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" th:href="@{/menu}" th:text="#{nav.menu}">Menú</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/reservation/form.html}" th:text="#{nav.reservations}">Reservas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/about-us}" th:text="#{nav.about}">Sobre Nosotros</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#footer-contact" th:text="#{nav.contact}">Contacto</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAnonymous()')}">
+                    <a class="nav-link" th:href="@{/login}" th:text="#{nav.login}">Iniciar Sesión</a>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a class="nav-link" th:href="@{/dashboard}" th:text="#{nav.dashboard}">Panel</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-globe"></i>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><a class="dropdown-item" href="?lang=es">Español</a></li>
+                        <li><a class="dropdown-item" href="?lang=en">English</a></li>
+                        <li><a class="dropdown-item" href="?lang=it">Italiano</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Menu Hero Section -->
+<section class="menu-hero">
+    <div class="container">
+        <h1 th:text="#{menu.hero.title}">Nuestra Carta</h1>
+        <p th:text="#{menu.hero.subtitle}">Descubre una selección exquisita de platos creados por nuestro chef ejecutivo</p>
+    </div>
+</section>
+
+<!-- Menu Section -->
+<section class="section">
+    <div class="container">
+        <!-- Aperitivos -->
+        <div class="menu-category">
+            <h2 class="category-title" th:text="#{menu.appetizers}">Aperitivos</h2>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Tartare de Atún Rojo</h4>
+                    <span class="dish-price">€28</span>
+                </div>
+                <p class="dish-description">Con aguacate, mango, caviar de wasabi y reducción de soja</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Vieiras Glaseadas</h4>
+                    <span class="dish-price">€32</span>
+                </div>
+                <p class="dish-description">Sobre cremoso de coliflor trufada y panceta ibérica crujiente</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Foie Gras mi-cuit</h4>
+                    <span class="dish-price">€35</span>
+                </div>
+                <p class="dish-description">Con compota de higos, brioche tostado y reducción de oporto</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Carpaccio de Pulpo</h4>
+                    <span class="dish-price">€26</span>
+                </div>
+                <p class="dish-description">Marinado en cítricos con aceite de oliva virgen extra y microgreens</p>
+            </div>
+        </div>
+
+        <!-- Principales -->
+        <div class="menu-category">
+            <h2 class="category-title" th:text="#{menu.mains}">Platos Principales</h2>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Lubina en Costra de Sal</h4>
+                    <span class="dish-price">€42</span>
+                </div>
+                <p class="dish-description">Con verduras de temporada confitadas y salsa verde de hierbas</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Cordero Lechal Asado</h4>
+                    <span class="dish-price">€48</span>
+                </div>
+                <p class="dish-description">Con puré de patata violeta, espárragos trigueros y jus de romero</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Solomillo de Ternera Wellington</h4>
+                    <span class="dish-price">€55</span>
+                </div>
+                <p class="dish-description">Envuelto en masa de hojaldre con duxelles de setas y salsa bordelesa</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Arroz Cremoso de Bogavante</h4>
+                    <span class="dish-price">€45</span>
+                </div>
+                <p class="dish-description">Con azafrán, almejas y un toque de brandy</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Pato Confitado</h4>
+                    <span class="dish-price">€38</span>
+                </div>
+                <p class="dish-description">Con salsa de cerezas al oporto y gratin dauphinoise</p>
+            </div>
+        </div>
+
+        <!-- Postres -->
+        <div class="menu-category">
+            <h2 class="category-title" th:text="#{menu.desserts}">Postres</h2>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Soufflé de Chocolate</h4>
+                    <span class="dish-price">€18</span>
+                </div>
+                <p class="dish-description">Con helado de vainilla de Madagascar y salsa de frambuesa</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Tarta Tatin de Manzana</h4>
+                    <span class="dish-price">€16</span>
+                </div>
+                <p class="dish-description">Con helado de canela y caramelo salado</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Crème Brûlée de Lavanda</h4>
+                    <span class="dish-price">€14</span>
+                </div>
+                <p class="dish-description">Con galleta de mantequilla y flores comestibles</p>
+            </div>
+            <div class="menu-item">
+                <div class="dish-header">
+                    <h4 class="dish-name">Selección de Quesos Artesanales</h4>
+                    <span class="dish-price">€22</span>
+                </div>
+                <p class="dish-description">Con mermeladas caseras, nueces y pan de centeno</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Wine Pairing Section -->
+<section class="section wine-pairing">
+    <div class="container">
+        <h2 class="section-title" th:text="#{menu.wines}">Selección de Vinos</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="menu-category">
+                    <h3 class="category-title" style="font-size: 1.5rem;">Vinos Tintos</h3>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Ribera del Duero Reserva</div>
+                            <div class="wine-origin">Dominio de Pingus, España</div>
+                        </div>
+                        <span class="wine-price">€85</span>
+                    </div>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Châteauneuf-du-Pape</div>
+                            <div class="wine-origin">Domaine du Vieux Télégraphe, Francia</div>
+                        </div>
+                        <span class="wine-price">€120</span>
+                    </div>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Barolo DOCG</div>
+                            <div class="wine-origin">Antinori, Italia</div>
+                        </div>
+                        <span class="wine-price">€95</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="menu-category">
+                    <h3 class="category-title" style="font-size: 1.5rem;">Vinos Blancos</h3>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Riesling Kabinett</div>
+                            <div class="wine-origin">Dr. Loosen, Alemania</div>
+                        </div>
+                        <span class="wine-price">€55</span>
+                    </div>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Chablis Premier Cru</div>
+                            <div class="wine-origin">Domaine William Fèvre, Francia</div>
+                        </div>
+                        <span class="wine-price">€75</span>
+                    </div>
+                    <div class="wine-item">
+                        <div class="wine-details">
+                            <div class="wine-name">Albariño Rías Baixas</div>
+                            <div class="wine-origin">Pazo de Señoráns, España</div>
+                        </div>
+                        <span class="wine-price">€45</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Chef's Recommendation -->
+<section class="chef-recommendation">
+    <div class="container">
+        <h2 class="section-title">Recomendación del Chef</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="recommendation-card">
+                    <h4 style="color: var(--burdeos-principal); margin-bottom: 20px;">Menú Degustación "Esencias Nocturnas"</h4>
+                    <p style="color: var(--marron-calido);">Una experiencia gastronómica de 7 tiempos que captura la esencia de la alta cocina mediterránea con influencias internacionales. Cada plato ha sido cuidadosamente diseñado para crear una sinfonía de sabores que evolucionan a lo largo de la velada.</p>
+                    <div style="font-size: 1.5rem; color: var(--burdeos-principal); font-weight: bold; margin: 20px 0;">€125 por persona</div>
+                    <p style="font-size: 0.9rem; color: var(--gris-claro);">Maridaje de vinos disponible por €45 adicionales</p>
+                    <div class="chef-signature">- Chef Ejecutivo Marco Delacroix</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="section" style="background-color: var(--crema-suave); text-align: center;">
+    <div class="container">
+        <h2 style="color: var(--burdeos-principal); margin-bottom: 30px;">¿Listo para una experiencia inolvidable?</h2>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">Reserva tu mesa y déjanos sorprenderte con nuestra propuesta gastronómica</p>
+        <a th:href="@{/reservation/form.html}" class="btn btn-primary btn-lg">Hacer Reserva</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4" id="footer-contact">
+                <h5 th:text="#{footer.about.title}">Ambrosía</h5>
+                <p th:text="#{footer.about.text}">Experiencia gastronómica de alta cocina en un ambiente exclusivo.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.contact.title}">Contacto</h5>
+                <p><i class="fas fa-map-marker-alt"></i> <span th:text="#{footer.address}">Calle Gourmet 123, Ciudad</span></p>
+                <p><i class="fas fa-phone"></i> <span th:text="#{footer.phone}">+34 912 345 678</span></p>
+                <p><i class="fas fa-envelope"></i> <span th:text="#{footer.email}">reservas@ambrosia.com</span></p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <h5 th:text="#{footer.hours.title}">Horario</h5>
+                <p><span th:text="#{footer.hours.lunch}">Comidas: 13:00 - 15:30</span></p>
+                <p><span th:text="#{footer.hours.dinner}">Cenas: 20:00 - 23:00</span></p>
+                <p><span th:text="#{footer.hours.closed}">Cerrado: Lunes</span></p>
+            </div>
+        </div>
+        <hr class="mt-4 mb-4" style="border-color: var(--crema-suave);">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-0" th:text="#{footer.copyright}">© 2025 Ambrosía. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <div class="language-selector">
+                    <a href="?lang=es">ES</a> |
+                    <a href="?lang=en">EN</a> |
+                    <a href="?lang=it">IT</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
