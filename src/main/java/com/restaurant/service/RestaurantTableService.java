@@ -32,8 +32,18 @@ public class RestaurantTableService {
         return tableRepository.findById(id);
     }
 
+    /**
+     * Encuentra mesas por estado - NOTA: Este método ahora es menos útil
+     * ya que el estado se calcula dinámicamente según las reservas
+     */
     public List<RestaurantTable> findByStatus(RestaurantTable.TableStatus status) {
-        return tableRepository.findByStatus(status);
+        if (status == RestaurantTable.TableStatus.AVAILABLE) {
+            // Para "disponible", calculamos dinámicamente para hoy
+            return findAvailableTablesForDateTime(LocalDateTime.now());
+        } else {
+            // Para otros estados, usar el método tradicional
+            return tableRepository.findByStatus(status);
+        }
     }
 
     /**
@@ -42,27 +52,88 @@ public class RestaurantTableService {
      * @return Lista de mesas disponibles
      */
     public List<RestaurantTable> findAvailableTablesForDateTime(LocalDateTime dateTime) {
-        // Si la fecha es nula, devolvemos todas las mesas disponibles
+        // Si la fecha es nula, usar fecha actual
         if (dateTime == null) {
-            return findByStatus(RestaurantTable.TableStatus.AVAILABLE);
+            dateTime = LocalDateTime.now();
         }
 
         // Definir ventana de tiempo para todo el día (desde las 00:00 hasta las 23:59)
         LocalDateTime startOfDay = dateTime.toLocalDate().atStartOfDay();
         LocalDateTime endOfDay = dateTime.toLocalDate().atTime(23, 59, 59);
 
-        // Obtener todas las mesas - CAMBIO: obtener todas, no solo las disponibles
+        // Obtener todas las mesas
         List<RestaurantTable> allTables = tableRepository.findAll();
 
-        // Obtener IDs de mesas que ya tienen reservas en ese día
+        // Obtener IDs de mesas que ya tienen reservas ACTIVAS en ese día específico
         List<Long> reservedTableIds = reservationRepository.findActiveReservationsInTimeRange(startOfDay, endOfDay)
                 .stream()
                 .map(reservation -> reservation.getTable().getId())
                 .collect(Collectors.toList());
 
-        // Filtrar mesas que no estén reservadas en ese día
+        // Filtrar mesas que no estén reservadas en ese día específico
         return allTables.stream()
                 .filter(table -> !reservedTableIds.contains(table.getId()))
+                .sorted(Comparator.comparing(RestaurantTable::getId)) // Ordenar por ID
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene el estado dinámico de una mesa para una fecha específica
+     * @param tableId ID de la mesa
+     * @param date Fecha para verificar (si es null, usa fecha actual)
+     * @return Estado de la mesa para esa fecha
+     */
+    public RestaurantTable.TableStatus getTableStatusForDate(Long tableId, LocalDateTime date) {
+        if (date == null) {
+            date = LocalDateTime.now();
+        }
+
+        // Definir ventana de tiempo para todo el día
+        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59);
+
+        // Verificar si hay reservas activas para esta mesa en esta fecha
+        List<Reservation> activeReservations = reservationRepository.findActiveReservationsInTimeRange(startOfDay, endOfDay)
+                .stream()
+                .filter(reservation -> reservation.getTable().getId().equals(tableId))
+                .collect(Collectors.toList());
+
+        if (!activeReservations.isEmpty()) {
+            return RestaurantTable.TableStatus.RESERVED;
+        }
+
+        // Si no hay reservas activas, verificar el estado base de la mesa
+        RestaurantTable table = tableRepository.findById(tableId).orElse(null);
+        if (table != null && table.getStatus() == RestaurantTable.TableStatus.OCCUPIED) {
+            // Solo mantener OCCUPIED si es para el día actual
+            if (date.toLocalDate().equals(LocalDateTime.now().toLocalDate())) {
+                return RestaurantTable.TableStatus.OCCUPIED;
+            }
+        }
+
+        return RestaurantTable.TableStatus.AVAILABLE;
+    }
+
+    /**
+     * Obtiene una lista de mesas con su estado calculado dinámicamente para una fecha
+     * @param date Fecha para calcular estados (si es null, usa fecha actual)
+     * @return Lista de mesas con estados actualizados
+     */
+    public List<RestaurantTable> getTablesWithDynamicStatus(LocalDateTime date) {
+        if (date == null) {
+            date = LocalDateTime.now();
+        }
+
+        List<RestaurantTable> allTables = findAll();
+
+        // Calcular el estado dinámico para cada mesa
+        for (RestaurantTable table : allTables) {
+            RestaurantTable.TableStatus dynamicStatus = getTableStatusForDate(table.getId(), date);
+            table.setStatus(dynamicStatus); // Establecer el estado calculado
+        }
+
+        return allTables.stream()
+                .sorted(Comparator.comparing(RestaurantTable::getId))
                 .collect(Collectors.toList());
     }
 
@@ -112,14 +183,22 @@ public class RestaurantTableService {
     }
 
     /**
-     * Actualiza el estado de una mesa
+     * Actualiza el estado base de una mesa (solo para OCCUPIED/AVAILABLE manual)
+     * NOTA: Los estados RESERVED se manejan automáticamente por las reservas
      */
     public RestaurantTable updateStatus(Long id, RestaurantTable.TableStatus status) {
         RestaurantTable table = tableRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
 
-        table.setStatus(status);
-        return tableRepository.save(table);
+        // Solo permitir cambios manuales a OCCUPIED o AVAILABLE
+        // RESERVED se maneja automáticamente por el sistema de reservas
+        if (status == RestaurantTable.TableStatus.OCCUPIED ||
+                status == RestaurantTable.TableStatus.AVAILABLE) {
+            table.setStatus(status);
+            return tableRepository.save(table);
+        } else {
+            throw new RuntimeException("No se puede establecer manualmente el estado RESERVED. Se maneja automáticamente por las reservas.");
+        }
     }
 
     /**
@@ -131,16 +210,16 @@ public class RestaurantTableService {
         RestaurantTable tableToDelete = tableRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
 
-        // Verificar si la mesa tiene reservas activas
+        // Verificar si la mesa tiene reservas activas FUTURAS
         LocalDateTime now = LocalDateTime.now();
-        List<Reservation> activeReservations = reservationRepository
+        List<Reservation> futureActiveReservations = reservationRepository
                 .findActiveReservationsInTimeRange(now, now.plusDays(365))
                 .stream()
                 .filter(reservation -> reservation.getTable().getId().equals(id))
                 .collect(Collectors.toList());
 
-        if (!activeReservations.isEmpty()) {
-            throw new RuntimeException("No se puede eliminar la mesa porque tiene reservas activas");
+        if (!futureActiveReservations.isEmpty()) {
+            throw new RuntimeException("No se puede eliminar la mesa porque tiene reservas activas futuras");
         }
 
         // Eliminar la mesa
@@ -180,11 +259,23 @@ public class RestaurantTableService {
     }
 
     /**
-     * Verifica si una mesa tiene reservas activas
+     * Verifica si una mesa tiene reservas activas futuras
      */
     public boolean hasActiveReservations(Long tableId) {
         LocalDateTime now = LocalDateTime.now();
         return reservationRepository.findActiveReservationsInTimeRange(now, now.plusDays(365))
+                .stream()
+                .anyMatch(reservation -> reservation.getTable().getId().equals(tableId));
+    }
+
+    /**
+     * Verifica si una mesa tiene reservas activas para una fecha específica
+     */
+    public boolean hasActiveReservationsForDate(Long tableId, LocalDateTime date) {
+        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59);
+
+        return reservationRepository.findActiveReservationsInTimeRange(startOfDay, endOfDay)
                 .stream()
                 .anyMatch(reservation -> reservation.getTable().getId().equals(tableId));
     }

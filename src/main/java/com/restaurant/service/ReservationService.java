@@ -110,12 +110,7 @@ public class ReservationService {
         RestaurantTable table = tableRepository.findById(reservationDto.getTableId())
                 .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
 
-        // Verificar disponibilidad de la mesa
-        if (table.getStatus() != RestaurantTable.TableStatus.AVAILABLE) {
-            throw new RuntimeException("La mesa no está disponible");
-        }
-
-        // Verificar si ya existe una reserva para esa mesa en ese día
+        // Verificar si ya existe una reserva ACTIVA para esa mesa en ese día específico
         LocalDateTime startOfDay = reservationDto.getDate().toLocalDate().atStartOfDay();
         LocalDateTime endOfDay = reservationDto.getDate().toLocalDate().atTime(23, 59, 59);
 
@@ -123,7 +118,7 @@ public class ReservationService {
                 table.getId(), startOfDay, endOfDay, Reservation.ReservationStatus.ACTIVE);
 
         if (!existingReservations.isEmpty()) {
-            throw new RuntimeException("Ya existe una reserva para esta mesa en este día");
+            throw new RuntimeException("Ya existe una reserva activa para esta mesa en este día");
         }
 
         // Crear la reserva
@@ -134,9 +129,7 @@ public class ReservationService {
         reservation.setGuests(reservationDto.getGuests());
         reservation.setStatus(Reservation.ReservationStatus.ACTIVE);
 
-        // Actualizar estado de la mesa
-        table.setStatus(RestaurantTable.TableStatus.RESERVED);
-        tableRepository.save(table);
+        // El estado de la mesa se calcula dinámicamente según las reservas activas
 
         return reservationRepository.save(reservation);
     }
@@ -169,20 +162,41 @@ public class ReservationService {
             RestaurantTable newTable = tableRepository.findById(reservationDto.getTableId())
                     .orElseThrow(() -> new RuntimeException("Mesa no encontrada"));
 
-            if (newTable.getStatus() != RestaurantTable.TableStatus.AVAILABLE) {
-                throw new RuntimeException("La mesa seleccionada no está disponible");
+            // Verificar si la nueva mesa está disponible para la nueva fecha
+            LocalDateTime startOfDay = reservationDto.getDate().toLocalDate().atStartOfDay();
+            LocalDateTime endOfDay = reservationDto.getDate().toLocalDate().atTime(23, 59, 59);
+
+            List<Reservation> conflictingReservations = reservationRepository.findByTableAndDateBetweenAndStatus(
+                    newTable.getId(), startOfDay, endOfDay, Reservation.ReservationStatus.ACTIVE);
+
+            // Excluir la reserva actual de la verificación
+            conflictingReservations = conflictingReservations.stream()
+                    .filter(r -> !r.getId().equals(reservation.getId()))
+                    .collect(Collectors.toList());
+
+            if (!conflictingReservations.isEmpty()) {
+                throw new RuntimeException("La mesa seleccionada ya tiene una reserva activa para ese día");
             }
 
-            // Liberar mesa anterior
-            RestaurantTable oldTable = reservation.getTable();
-            oldTable.setStatus(RestaurantTable.TableStatus.AVAILABLE);
-            tableRepository.save(oldTable);
-
-            // Reservar nueva mesa
-            newTable.setStatus(RestaurantTable.TableStatus.RESERVED);
-            tableRepository.save(newTable);
-
             reservation.setTable(newTable);
+        }
+
+        // Si cambia la fecha, verificar disponibilidad para la nueva fecha
+        if (!reservation.getDate().toLocalDate().equals(reservationDto.getDate().toLocalDate())) {
+            LocalDateTime startOfDay = reservationDto.getDate().toLocalDate().atStartOfDay();
+            LocalDateTime endOfDay = reservationDto.getDate().toLocalDate().atTime(23, 59, 59);
+
+            List<Reservation> conflictingReservations = reservationRepository.findByTableAndDateBetweenAndStatus(
+                    reservation.getTable().getId(), startOfDay, endOfDay, Reservation.ReservationStatus.ACTIVE);
+
+            // Excluir la reserva actual de la verificación
+            conflictingReservations = conflictingReservations.stream()
+                    .filter(r -> !r.getId().equals(reservation.getId()))
+                    .collect(Collectors.toList());
+
+            if (!conflictingReservations.isEmpty()) {
+                throw new RuntimeException("La mesa ya tiene una reserva activa para la nueva fecha");
+            }
         }
 
         // Actualizar campos de la reserva
@@ -191,13 +205,6 @@ public class ReservationService {
 
         if (reservationDto.getStatus() != null) {
             reservation.setStatus(reservationDto.getStatus());
-
-            // Si la reserva se cancela, liberar la mesa
-            if (reservationDto.getStatus() == Reservation.ReservationStatus.CANCELLED) {
-                RestaurantTable table = reservation.getTable();
-                table.setStatus(RestaurantTable.TableStatus.AVAILABLE);
-                tableRepository.save(table);
-            }
         }
 
         return reservationRepository.save(reservation);
@@ -229,10 +236,6 @@ public class ReservationService {
         reservation.setStatus(Reservation.ReservationStatus.CANCELLED);
         reservationRepository.save(reservation);
 
-        // Liberar la mesa
-        RestaurantTable table = reservation.getTable();
-        table.setStatus(RestaurantTable.TableStatus.AVAILABLE);
-        tableRepository.save(table);
     }
 
     @Transactional
@@ -253,9 +256,5 @@ public class ReservationService {
         reservation.setStatus(Reservation.ReservationStatus.COMPLETED);
         reservationRepository.save(reservation);
 
-        // Liberar la mesa
-        RestaurantTable table = reservation.getTable();
-        table.setStatus(RestaurantTable.TableStatus.AVAILABLE);
-        tableRepository.save(table);
     }
 }
