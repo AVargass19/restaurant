@@ -58,6 +58,11 @@ public class DashboardController {
         boolean isUser = currentUser.getRoles().stream()
                 .anyMatch(role -> role.getName().equals("ROLE_USER"));
 
+        // Añadir flags de rol al modelo
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isStaff", isStaff);
+        model.addAttribute("isUser", isUser);
+
         // Si es ADMIN
         if (isAdmin) {
             // Estadísticas para el dashboard de admin
@@ -86,13 +91,19 @@ public class DashboardController {
                     sortedReservations.subList(0, 10) : sortedReservations;
 
             model.addAttribute("recentReservations", recentReservations);
+
+            // IMPORTANTE: Estado dinámico de mesas para HOY
+            List<RestaurantTable> tables = restaurantTableService.getTablesWithDynamicStatus(LocalDateTime.now());
+            model.addAttribute("tables", tables);
         }
 
         // Si es STAFF
         if (isStaff || isAdmin) {
-            // Estado de mesas
-            List<RestaurantTable> tables = restaurantTableService.findAll();
-            model.addAttribute("tables", tables);
+            // IMPORTANTE: Estado dinámico de mesas para HOY - Solo para staff si no es admin
+            if (!isAdmin) {
+                List<RestaurantTable> tables = restaurantTableService.getTablesWithDynamicStatus(LocalDateTime.now());
+                model.addAttribute("tables", tables);
+            }
 
             // Reservas del día - SOLO ACTIVAS y ordenadas por hora
             LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
