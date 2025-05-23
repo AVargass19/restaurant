@@ -1,250 +1,334 @@
 /**
- * Funciones JavaScript para la gestión de mesas en el dashboard
+ * Inicializa la vista ordenando las mesas por ID desde el principio
  */
+function initializeOrderedTablesView() {
+    const tableGrid = document.querySelector('.table-grid');
+    if (!tableGrid) return;
 
-// Variables globales
-let currentViewDate = new Date();
+    const tables = Array.from(tableGrid.querySelectorAll('.table-card'));
+
+    // Ordenar las mesas por ID
+    tables.sort((a, b) => {
+        const idA = parseInt(a.querySelector('div:nth-child(1)').textContent.replace(/\D/g, '')) || 0;
+        const idB = parseInt(b.querySelector('div:nth-child(1)').textContent.replace(/\D/g, '')) || 0;
+        return idA - idB;
+    });
+
+    // Limpiar el grid y volver a insertar en orden
+    tableGrid.innerHTML = '';
+    tables.forEach(table => {
+        tableGrid.appendChild(table);
+    });
+}
+
+/**
+ * Funciones JavaScript para la gestión de mesas en el dashboard
+ * Versión estática - Solo muestra información del día actual
+ */
 
 // Inicialización de la vista de mesas
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar la vista de mesas por día para el staff si existe
+    // Inicializar la vista de mesas para el staff si existe
     if (document.querySelector('.table-grid')) {
-        setupTableNavigation();
+        setupStaticTableView();
     }
 });
 
 /**
- * Configura la navegación de la vista de mesas
+ * Configura la vista estática de mesas para el día actual
  */
-function setupTableNavigation() {
-    // Agregar controles de navegación para las mesas si no existen
+function setupStaticTableView() {
     const tablePanel = document.querySelector('.table-grid').parentElement;
 
-    if (tablePanel && !document.getElementById('tableNavControls')) {
-        // Insertar controles de navegación antes de la cuadrícula de mesas
-        const navControls = document.createElement('div');
-        navControls.id = 'tableNavControls';
-        navControls.className = 'table-nav-controls';
-        navControls.innerHTML = `
-      <div class="date-nav">
-        <button id="prevDayBtn" class="nav-btn"><i class="fas fa-chevron-left"></i> Día anterior</button>
-        <h3 id="currentDateDisplay"></h3>
-        <button id="nextDayBtn" class="nav-btn">Día siguiente <i class="fas fa-chevron-right"></i></button>
-      </div>
-      <div class="week-nav">
-        <button id="viewWeekBtn" class="week-btn">Ver semana completa</button>
-      </div>
-    `;
+    if (tablePanel && !document.getElementById('currentDateDisplay')) {
+        // Insertar solo el display de fecha actual antes de la cuadrícula de mesas
+        const dateDisplay = document.createElement('div');
+        dateDisplay.id = 'currentDateDisplay';
+        dateDisplay.className = 'current-date-display';
+
+        // Formatear la fecha actual en español
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = today.toLocaleDateString('es-ES', options);
+
+        dateDisplay.innerHTML = `
+            <div class="date-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007bff;">
+                <h3 style="margin: 0; color: #495057; font-size: 1.1rem;"><i class="fas fa-calendar-day" style="margin-right: 8px; color: #007bff;"></i> ${formattedDate}</h3>
+                <button id="refreshTablesBtn" class="refresh-btn" title="Actualizar estado de mesas" style="background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85rem; transition: all 0.2s;">
+                    <i class="fas fa-sync-alt" style="margin-right: 5px;"></i> Actualizar
+                </button>
+            </div>
+        `;
 
         // Insertar antes de la cuadrícula de mesas
-        tablePanel.insertBefore(navControls, document.querySelector('.table-grid'));
+        tablePanel.insertBefore(dateDisplay, document.querySelector('.table-grid'));
 
-        // Configurar eventos para los botones de navegación
-        document.getElementById('prevDayBtn').addEventListener('click', function() {
-            navigateTableDay(-1);
+        // Configurar evento para el botón de actualización
+        document.getElementById('refreshTablesBtn').addEventListener('click', function() {
+            updateTablesStatus();
         });
 
-        document.getElementById('nextDayBtn').addEventListener('click', function() {
-            navigateTableDay(1);
+        // Añadir estilos hover para el botón
+        const refreshBtn = document.getElementById('refreshTablesBtn');
+        refreshBtn.addEventListener('mouseenter', function() {
+            this.style.background = '#0056b3';
+            this.style.transform = 'translateY(-1px)';
+        });
+        refreshBtn.addEventListener('mouseleave', function() {
+            this.style.background = '#007bff';
+            this.style.transform = 'translateY(0)';
         });
 
-        document.getElementById('viewWeekBtn').addEventListener('click', function() {
-            showWeekView();
-        });
+        // Inicializar la vista con datos actuales y ordenamiento
+        initializeOrderedTablesView();
+        updateTablesStatus();
 
-        // Inicializar la vista
-        updateTablesView();
+        // Configurar actualización automática cada 5 minutos (solo si hay endpoint disponible)
+        setInterval(() => {
+            // Solo actualizar automáticamente si no hay errores recientes
+            const errorMessage = document.getElementById('errorMessage');
+            if (!errorMessage) {
+                updateTablesStatus();
+            }
+        }, 300000); // 5 minutos
     }
 }
 
 /**
- * Actualiza la visualización de mesas para la fecha actual
+ * Actualiza el estado de las mesas con información real del día actual
  */
-
-/**
- * Actualiza la visualización de mesas para la fecha actual
- */
-function updateTablesView() {
+function updateTablesStatus() {
     const tableGrid = document.querySelector('.table-grid');
     if (!tableGrid) return;
 
-    const dateDisplay = document.getElementById('currentDateDisplay');
-    if (dateDisplay) {
-        // Formatear la fecha actual en español
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        dateDisplay.textContent = currentViewDate.toLocaleDateString('es-ES', options);
+    // Añadir indicador de carga
+    const refreshBtn = document.getElementById('refreshTablesBtn');
+    if (refreshBtn) {
+        const icon = refreshBtn.querySelector('i');
+        icon.classList.add('fa-spin');
+        refreshBtn.disabled = true;
     }
 
-    // Realizar una petición AJAX para obtener el estado real de las mesas
-    const formattedDate = currentViewDate.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    // Intentar obtener datos del servidor, pero si falla, usar los datos del HTML
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
 
+    // Verificar si el endpoint existe antes de hacer la llamada
     fetch(`/api/tables/status?date=${formattedDate}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            // Actualizar cada mesa con su estado real
-            const tables = tableGrid.querySelectorAll('.table-card');
-
-            tables.forEach(tableCard => {
-                // Extraer el ID de la mesa del texto (asumiendo que tiene formato "Mesa X")
-                const tableText = tableCard.querySelector('div:nth-child(1)').textContent;
-                const tableId = tableText.replace(/\D/g, ''); // Extraer solo los dígitos
-
-                if (tableId && data[tableId]) {
-                    const status = data[tableId].toLowerCase();
-
-                    // Actualizar clase y texto
-                    tableCard.className = `table-card ${status}`;
-                    const statusText = tableCard.querySelector('div:nth-child(2)');
-                    if (statusText) {
-                        statusText.textContent = 'Status: ' + status.charAt(0).toUpperCase() + status.slice(1);
-                    }
-                }
-            });
+            updateTablesWithData(data);
+            updateLastRefreshTime();
         })
         .catch(error => {
-            console.error('Error al obtener el estado de las mesas:', error);
+            console.log('API no disponible, usando datos del HTML:', error.message);
+            // En lugar de mostrar error, simplemente usar los datos que ya están en el HTML
+            updateTablesFromHTML();
+            updateLastRefreshTime();
+        })
+        .finally(() => {
+            // Remover indicador de carga
+            if (refreshBtn) {
+                const icon = refreshBtn.querySelector('i');
+                icon.classList.remove('fa-spin');
+                refreshBtn.disabled = false;
+            }
         });
 }
 
 /**
- * Navega a un día anterior o siguiente en la vista de mesas
+ * Actualiza las mesas con datos del servidor
  */
-function navigateTableDay(direction) {
-    // Crear una nueva fecha para no modificar directamente la fecha actual
-    const newDate = new Date(currentViewDate);
-    newDate.setDate(newDate.getDate() + direction);
-    currentViewDate = newDate;
+function updateTablesWithData(data) {
+    const tableGrid = document.querySelector('.table-grid');
+    const tables = Array.from(tableGrid.querySelectorAll('.table-card'));
 
-    updateTablesView();
+    // Crear un array con las mesas y sus datos para ordenar
+    const tablesWithData = tables.map(tableCard => {
+        const tableText = tableCard.querySelector('div:nth-child(1)').textContent;
+        const tableId = tableText.replace(/\D/g, '');
+        const numericId = parseInt(tableId) || 0;
+
+        let status = 'available';
+        let additionalInfo = null;
+
+        if (tableId && data[tableId]) {
+            status = data[tableId].toLowerCase();
+            additionalInfo = data[tableId + '_info'];
+        }
+
+        return {
+            element: tableCard,
+            id: numericId,
+            status: status,
+            additionalInfo: additionalInfo
+        };
+    });
+
+    // Ordenar por ID ascendente
+    tablesWithData.sort((a, b) => a.id - b.id);
+
+    // Limpiar el grid y volver a insertar las mesas en orden
+    tableGrid.innerHTML = '';
+
+    tablesWithData.forEach(tableData => {
+        updateTableCard(tableData.element, tableData.status, tableData.additionalInfo);
+        tableGrid.appendChild(tableData.element);
+    });
 }
 
 /**
- * Muestra la vista de semana completa para las mesas
+ * Actualiza las mesas usando los datos que ya están en el HTML
  */
-function showWeekView() {
-    // Obtener el contenedor de la cuadrícula de mesas
-    const tablePanel = document.querySelector('.panel');
-    if (!tablePanel) return;
+function updateTablesFromHTML() {
+    const tableGrid = document.querySelector('.table-grid');
+    const tables = Array.from(tableGrid.querySelectorAll('.table-card'));
 
-    // Crear un modal para mostrar la vista semanal
-    const modal = document.createElement('div');
-    modal.className = 'modal-overlay active';
-
-    // Obtener la fecha del primer día de la semana actual (lunes)
-    const startDate = new Date(currentViewDate);
-    const day = startDate.getDay(); // 0 = domingo, 1 = lunes, ..., 6 = sábado
-    const diff = startDate.getDate() - day + (day === 0 ? -6 : 1); // Ajustar al lunes
-    startDate.setDate(diff);
-
-    // Generar la vista para cada día de la semana
-    let weekHTML = '';
-    const weekdays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-
-    // Contenido del modal (estructura)
-    modal.innerHTML = `
-      <div class="modal-container week-view-modal">
-        <div class="modal-header">
-          <div>
-            <i class="fas fa-calendar-week modal-icon"></i>
-            <span class="modal-title">Vista semanal de mesas</span>
-          </div>
-        </div>
-        <div class="modal-content">
-          <div class="week-grid" id="weekGrid">
-            <div class="loading-indicator">
-              <i class="fas fa-spinner fa-spin"></i> Cargando datos de la semana...
-            </div>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button id="closeWeekViewBtn" class="modal-btn modal-btn-cancel">Cerrar</button>
-        </div>
-      </div>
-    `;
-
-    // Añadir el modal al body
-    document.body.appendChild(modal);
-
-    // Configurar el botón de cierre
-    document.getElementById('closeWeekViewBtn').addEventListener('click', function() {
-        document.body.removeChild(modal);
+    // Ordenar las mesas por ID antes de procesarlas
+    tables.sort((a, b) => {
+        const idA = parseInt(a.querySelector('div:nth-child(1)').textContent.replace(/\D/g, '')) || 0;
+        const idB = parseInt(b.querySelector('div:nth-child(1)').textContent.replace(/\D/g, '')) || 0;
+        return idA - idB;
     });
 
-    // Cerrar el modal al hacer clic fuera de él
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            document.body.removeChild(modal);
+    // Limpiar el grid y volver a insertar las mesas en orden
+    tableGrid.innerHTML = '';
+    tables.forEach(tableCard => {
+        // Determinar el estado actual basado en las clases CSS existentes
+        let currentStatus = 'available';
+        if (tableCard.classList.contains('occupied')) {
+            currentStatus = 'occupied';
+        } else if (tableCard.classList.contains('reserved')) {
+            currentStatus = 'reserved';
         }
+
+        // Mantener el estado actual y solo actualizar el formato del texto si es necesario
+        updateTableCard(tableCard, currentStatus);
+        tableGrid.appendChild(tableCard);
     });
+}
 
-    // Obtener datos para cada día de la semana
-    const weekGrid = document.getElementById('weekGrid');
+/**
+ * Actualiza una tarjeta de mesa individual
+ */
+function updateTableCard(tableCard, status, additionalInfo = null) {
+    // Mapear estados a clases CSS y texto en español
+    let cssClass = 'table-card';
+    let statusDisplay = '';
 
-    // Crear el HTML para cada día de la semana
-    let weekContentHTML = '';
-    const promises = [];
-
-    // Por cada día de la semana, obtener los datos de las mesas
-    for (let i = 0; i < 7; i++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + i);
-
-        // Formatear la fecha para mostrar y para la API
-        const formattedDateDisplay = currentDate.toLocaleDateString('es-ES', {day: '2-digit', month: '2-digit'});
-        const formattedDateForApi = currentDate.toISOString().split('T')[0]; // YYYY-MM-DD
-
-        // Crear contenedor del día
-        weekContentHTML += `
-          <div class="week-day">
-            <h4>${weekdays[i]} (${formattedDateDisplay})</h4>
-            <div class="week-tables" id="day-${i}">
-              <div class="loading-day"><i class="fas fa-spinner fa-spin"></i> Cargando...</div>
-            </div>
-          </div>
-        `;
-
-        // Preparar la promesa para obtener datos de este día
-        const promise = fetch(`/api/tables/status?date=${formattedDateForApi}`)
-            .then(response => response.json())
-            .then(data => {
-                return { dayIndex: i, tableData: data };
-            });
-
-        promises.push(promise);
+    switch(status.toLowerCase()) {
+        case 'available':
+            cssClass += ' available';
+            statusDisplay = 'Disponible';
+            break;
+        case 'occupied':
+            cssClass += ' occupied';
+            statusDisplay = 'Ocupada';
+            break;
+        case 'reserved':
+            cssClass += ' reserved';
+            statusDisplay = 'Reservada';
+            break;
+        default:
+            cssClass += ' available';
+            statusDisplay = 'Disponible';
     }
 
-    // Reemplazar el contenido del grid con los días
-    weekGrid.innerHTML = weekContentHTML;
+    // Actualizar clase y texto
+    tableCard.className = cssClass;
+    const statusText = tableCard.querySelector('div:nth-child(2)');
+    if (statusText) {
+        statusText.textContent = `Estado: ${statusDisplay}`;
+    }
 
-    // Resolver todas las promesas y actualizar cada día
-    Promise.all(promises)
-        .then(results => {
-            // Para cada día, actualizar su contenido con los datos reales
-            results.forEach(result => {
-                const dayContainer = document.getElementById(`day-${result.dayIndex}`);
+    // Añadir información adicional si existe
+    if (additionalInfo) {
+        let tooltipText = '';
 
-                // Obtener todas las mesas y ordenarlas por ID
-                const tableIds = Object.keys(result.tableData).sort((a, b) => parseInt(a) - parseInt(b));
+        if (additionalInfo.reservationTime) {
+            tooltipText += `Reserva: ${additionalInfo.reservationTime}`;
+        }
+        if (additionalInfo.customerName) {
+            tooltipText += `${tooltipText ? '\n' : ''}Cliente: ${additionalInfo.customerName}`;
+        }
+        if (additionalInfo.guests) {
+            tooltipText += `${tooltipText ? '\n' : ''}Comensales: ${additionalInfo.guests}`;
+        }
 
-                if (tableIds.length > 0) {
-                    let tablesHTML = '';
+        if (tooltipText) {
+            tableCard.setAttribute('title', tooltipText);
+        }
+    }
+}
 
-                    // Crear una tarjeta por cada mesa
-                    tableIds.forEach(tableId => {
-                        const status = result.tableData[tableId].toLowerCase();
-                        tablesHTML += `
-                          <div class="table-card ${status}">Mesa ${tableId}</div>
-                        `;
-                    });
+/**
+ * Actualiza el timestamp de la última actualización
+ */
+function updateLastRefreshTime() {
+    let lastUpdateElement = document.getElementById('lastUpdateTime');
 
-                    dayContainer.innerHTML = tablesHTML;
-                } else {
-                    dayContainer.innerHTML = '<div class="no-tables">No hay datos disponibles</div>';
-                }
-            });
-        })
-        .catch(error => {
-            console.error('Error al obtener datos de la semana:', error);
-            weekGrid.innerHTML = '<div class="error-message">Error al cargar los datos de la semana</div>';
+    if (!lastUpdateElement) {
+        // Crear elemento si no existe
+        const dateDisplay = document.getElementById('currentDateDisplay');
+        if (dateDisplay) {
+            lastUpdateElement = document.createElement('div');
+            lastUpdateElement.id = 'lastUpdateTime';
+            dateDisplay.appendChild(lastUpdateElement);
+        }
+    }
+
+    if (lastUpdateElement) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
         });
+        lastUpdateElement.innerHTML = `<small style="color: #6c757d; font-size: 0.8rem; margin-top: 5px; display: block;">Última actualización: ${timeString}</small>`;
+    }
+}
+
+/**
+ * Muestra un mensaje de error temporal (eliminado - ya no se usa)
+ */
+function showErrorMessage(message) {
+    // Función deshabilitada - ya no mostramos errores molestos
+    console.log('Info:', message);
+}
+
+/**
+ * Función auxiliar para formatear fecha
+ */
+function formatDate(date) {
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    };
+    return date.toLocaleDateString('es-ES', options);
+}
+
+/**
+ * Función para limpiar y reinicializar la vista si es necesario
+ */
+function reinitializeTablesView() {
+    // Limpiar elementos existentes
+    const existingDisplay = document.getElementById('currentDateDisplay');
+    if (existingDisplay) {
+        existingDisplay.remove();
+    }
+
+    const existingError = document.getElementById('errorMessage');
+    if (existingError) {
+        existingError.remove();
+    }
+
+    // Reinicializar
+    setupStaticTableView();
 }
