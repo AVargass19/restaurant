@@ -1,0 +1,161 @@
+:root {
+    --burdeos-principal: #8C1C13;
+    --crema-suave: #F5F5F0;
+    --marron-calido: #5D4037;
+    --gris-marengo: #4F5459;
+    --burdeos-claro: #AB4E3C;
+    --gris-claro: #7E8C8D;
+    --warm-beige: #E6D2B5;
+}
+
+body {
+    font-family: 'Cormorant Garamond', serif;
+    background-color: var(--crema-suave);
+    color: var(--marron-calido);
+}
+
+.navbar {
+    background-color: var(--burdeos-principal);
+}
+
+.navbar-brand, .nav-link {
+    color: var(--crema-suave) !important;
+}
+
+.navbar-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: bold;
+}
+
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/hero-bg.webp');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 120px 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    font-family: 'Playfair Display', serif;
+}
+
+.hero-section p {
+    font-size: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.btn-primary {
+    background-color: var(--burdeos-principal);
+    border-color: var(--burdeos-principal);
+}
+
+.btn-primary:hover {
+    background-color: var(--burdeos-claro);
+    border-color: var(--burdeos-claro);
+}
+
+.section {
+    padding: 80px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    color: var(--burdeos-principal);
+    font-family: 'Playfair Display', serif;
+}
+
+.restaurant-info {
+    background-color: var(--warm-beige);
+}
+
+.info-card {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.info-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.reservation-steps {
+    background-color: var(--crema-suave);
+}
+
+.step-card {
+    text-align: center;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.step-number {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: var(--burdeos-principal);
+    color: white;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.access-cards {
+    background-color: var(--warm-beige);
+}
+
+.access-card {
+    padding: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    height: 100%;
+}
+
+.access-card:hover {
+    transform: translateY(-10px);
+}
+
+.access-icon {
+    font-size: 3rem;
+    color: var(--burdeos-principal);
+    margin-bottom: 20px;
+}
+
+footer {
+    background-color: var(--gris-marengo);
+    color: var(--crema-suave);
+    padding: 40px 0;
+}
+
+.language-selector {
+    margin-left: 15px;
+}
+
+.language-selector a {
+    color: var(--crema-suave);
+    text-decoration: none;
+    margin: 0 5px;
+}
+
+.language-selector a:hover {
+    text-decoration: underline;
+}
