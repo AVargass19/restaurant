@@ -1,4 +1,4 @@
-// JavaScript simplificado para estudiante con verificación real
+
 document.addEventListener('DOMContentLoaded', function() {
 
     const usernameInput = document.getElementById('username');

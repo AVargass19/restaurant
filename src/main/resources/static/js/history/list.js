@@ -1,5 +1,5 @@
 /**
- * JavaScript mejorado para el historial de reservas
+ * JavaScript para el historial de reservas
  */
 
 // Variables globales

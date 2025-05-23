@@ -1,5 +1,5 @@
 /**
- * JavaScript simplificado para la gestión de la lista de usuarios
+ * JavaScript para la gestión de la lista de usuarios
  * Filtros y búsqueda en tiempo real
  */
 
