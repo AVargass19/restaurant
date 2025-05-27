@@ -98,11 +98,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .deleteCookies("JSESSIONID")
                         .permitAll()
                 )
-                .rememberMe(remember -> remember
-                        .key("miClaveSecretaParaRememberMe")
-                        .tokenValiditySeconds(86400)
-                        .userDetailsService(userDetailsService)
-                )
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/error/access-denied")
                 );
